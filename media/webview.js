@@ -8,6 +8,8 @@
   // @ts-ignore
   const vscode = acquireVsCodeApi();
   const post = (/** @type {any} */ m) => vscode.postMessage(m);
+  /** @type {any} */ (window).ldPuppetPage = { doc: () => doc(), frame: () => state.front };
+  /** @type {any} */ (window).ldPuppetDone = (id) => post({ type: 'puppetDone', id });
   const SHELL_NONCE = (document.currentScript && /** @type {HTMLScriptElement} */ (document.currentScript).nonce) || '';
   window.addEventListener('error', (e) => post({ type: 'log', text: 'error: ' + e.message + ' @' + e.lineno }));
 
@@ -128,6 +130,7 @@
         setMode(m.mode);
         break;
       case 'test':
+        if (m.action && m.action.kind === 'puppet') { const w = /** @type {any} */ (window); if (w.ldPuppet) w.ldPuppet(m.action); break; }
         runTest(m.action);
         break;
       case 'query':

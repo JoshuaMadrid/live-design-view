@@ -139,6 +139,7 @@ type FromWebview =
   | { type: 'setSelectors'; id: number; value: string }
   | { type: 'createRules'; selectors: string[]; source: string }
   | { type: 'followLink'; href: string }
+  | { type: 'puppetDone'; id: number }
   | { type: 'runAudit' }
   | { type: 'lighthouse' }
   | { type: 'auditShow'; category: string }
@@ -818,6 +819,12 @@ export class LiveSession {
         formLog().appendLine(`[${new Date().toLocaleTimeString()}] ${vscode.workspace.asRelativePath(this.document.uri)}: blocked by validation — ${f.label}: ${f.message}`);
         return;
       }
+      case 'puppetDone': {
+        const id = (raw as unknown as { id: number }).id;
+        this.puppetWaiters.get(id)?.();
+        this.puppetWaiters.delete(id);
+        return;
+      }
       case 'followLink':
         return this.followLink((raw as unknown as { href: string }).href);
       case 'createRules': {
@@ -1042,6 +1049,18 @@ export class LiveSession {
     });
   }
 
+  private puppetWaiters = new Map<number, () => void>();
+  private puppetSeq = 0;
+  /** Demo-only: drive the canvas with the drawn pointer (media/puppet.js); resolves when the step finishes. */
+  puppet(action: Record<string, unknown>, timeoutMs = 15000): Promise<void> {
+    const id = ++this.puppetSeq;
+    return new Promise((resolve) => {
+      const t = setTimeout(() => { this.puppetWaiters.delete(id); resolve(); }, timeoutMs);
+      this.puppetWaiters.set(id, () => { clearTimeout(t); resolve(); });
+      this.testAction({ kind: 'puppet', id, ...action });
+    });
+  }
+
   /** Test-only: toolbar button states, Elements bar / interact / visual-aids state. */
   uiState(): Promise<any> {
     return new Promise((resolve) => {
@@ -1177,6 +1196,7 @@ export class LiveSession {
   <nav id="crumbs" aria-label="Element ancestry"></nav>
 </div>
 <script nonce="${n}" src="${media('webview.js')}"></script>
+<script nonce="${n}" src="${media('puppet.js')}"></script>
 </body>
 </html>`;
   }

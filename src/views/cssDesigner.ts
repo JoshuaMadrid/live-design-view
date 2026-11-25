@@ -127,6 +127,7 @@ export class CssDesignerProvider implements vscode.WebviewViewProvider, vscode.D
 <script nonce="${nonce}" src="${media('sizing.js')}"></script>
 <script nonce="${nonce}" src="${media('units.js')}"></script>
 <script nonce="${nonce}" src="${media('cssDesigner.js')}"></script>
+<script nonce="${nonce}" src="${media('puppet.js')}"></script>
 </body>
 </html>`;
     view.webview.onDidReceiveMessage((m) => void this.onMessage(m));
@@ -349,6 +350,18 @@ export class CssDesignerProvider implements vscode.WebviewViewProvider, vscode.D
     });
   }
 
+  private puppetWaiters = new Map<number, () => void>();
+  private puppetSeq = 0;
+  /** Demo hook: drive the panel with the drawn pointer (see media/puppet.js); resolves when the step finishes. */
+  puppet(action: Record<string, unknown>, timeoutMs = 15000): Promise<void> {
+    const id = ++this.puppetSeq;
+    return new Promise((resolve) => {
+      const t = setTimeout(() => { this.puppetWaiters.delete(id); resolve(); }, timeoutMs);
+      this.puppetWaiters.set(id, () => { clearTimeout(t); resolve(); });
+      void this.view?.webview.postMessage({ type: 'puppet', id, ...action });
+    });
+  }
+
   /** Test hook: click a margin/padding link toggle ("padding:all" | "padding:x" | "padding:y"). */
   testBoxLink(link: string) {
     void this.view?.webview.postMessage({ type: 'testBoxLink', link });
@@ -415,6 +428,10 @@ export class CssDesignerProvider implements vscode.WebviewViewProvider, vscode.D
       }
       case 'setProp':
         return this.editRule(m.rule ?? this.ruleKey, (css, r) => setDeclaration(css, r.id, m.prop, m.value));
+      case 'puppetDone':
+        this.puppetWaiters.get(m.id)?.();
+        this.puppetWaiters.delete(m.id);
+        return;
       case 'testGroupsResult':
         this.groupWaiters.splice(0).forEach((w) => w(m));
         return;

@@ -90,6 +90,12 @@
 
   window.addEventListener('message', (ev) => {
     const m = ev.data;
+    if (m.type === 'puppet') {
+      const w = /** @type {any} */ (window);
+      w.ldPuppetDone = (id) => post({ type: 'puppetDone', id });
+      if (w.ldPuppet) w.ldPuppet(m);
+      return;
+    }
     if (m.type === 'testGroups') {
       // test hook: click a group header (optionally with Alt), report which groups are open
       if (m.click) {
