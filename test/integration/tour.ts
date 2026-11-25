@@ -105,7 +105,7 @@ export async function run(): Promise<void> {
   mark('text');
   await P({ op: 'dblclick', page: true, sel: 'p.lead + p' });
   await step(900);
-  await P({ op: 'type', page: true, sel: 'p.lead + p', selectAll: true, text: 'Made by hand, one lantern at a time.', cps: 14 });
+  await P({ op: 'type', page: true, sel: 'p.lead + p', selectAll: true, value: 'Made by hand, one lantern at a time.', cps: 14 });
   await step(3500);
   await P({ op: 'click', page: true, sel: 'h1' });
   await step(1400);
@@ -116,7 +116,7 @@ export async function run(): Promise<void> {
   await step(1200);
   await P({ op: 'click', sel: '#hudAdd' });
   await step(700);
-  await P({ op: 'type', sel: '#hudInput', glide: false, text: '.note', enter: true, cps: 8 });
+  await P({ op: 'type', sel: '#hudInput', glide: false, value: '.note', enter: true, cps: 8 });
   await step(2200);
   await P({ op: 'click', sel: '#hudRuleCreate' });
   await step(2200);
@@ -124,15 +124,15 @@ export async function run(): Promise<void> {
   // 7. Style it in the Styles panel
   mark('styles');
   await C({ op: 'show', x: 120, y: 120 });
-  await C({ op: 'type', sel: 'input[data-focus-key="p:background-color"]', replace: true, text: '#f6e7cf', change: true, cps: 10 });
+  await C({ op: 'type', sel: 'input[data-focus-key="p:background-color"]', replace: true, value: '#f6e7cf', change: true, cps: 10 });
   await step(2400);
-  await C({ op: 'type', sel: 'input[data-focus-key="u:padding-top"]', replace: true, text: '18', change: true, cps: 6 });
+  await C({ op: 'type', sel: 'input[data-focus-key="u:padding-top"]', replace: true, value: '18', change: true, cps: 6 });
   await step(1800);
   await C({ op: 'click', sel: '[data-link="padding:all"]' });
   await step(1800);
-  await C({ op: 'type', sel: 'input[data-focus-key="u:border-radius"]', replace: true, text: '12', change: true, cps: 6 });
+  await C({ op: 'type', sel: 'input[data-focus-key="u:border-radius"]', replace: true, value: '12', change: true, cps: 6 });
   await step(1800);
-  await C({ op: 'type', sel: 'input[data-focus-key="u:font-size"]', replace: true, text: '20', change: true, cps: 6 });
+  await C({ op: 'type', sel: 'input[data-focus-key="u:font-size"]', replace: true, value: '20', change: true, cps: 6 });
   await step(1800);
   await C({ op: 'hide' });
 
@@ -152,7 +152,11 @@ export async function run(): Promise<void> {
   await P({ op: 'click', page: true, sel: 'section.features ul' });
   await step(1200);
   await C({ op: 'show', x: 120, y: 200 });
+  await C({ op: 'click', sel: '.seg button', text: 'Selection' });
+  await step(1400);
   await C({ op: 'click', sel: '.ly-segbtn[aria-label="Horizontal"]' });
+  await step(1200);
+  await C({ op: 'click', sel: '.seg button', text: 'Page' });
   await step(2000);
   await C({ op: 'hide' });
   await P({ op: 'click', sel: '#toggleAllLayouts' });
@@ -202,11 +206,11 @@ export async function run(): Promise<void> {
   await P({ op: 'show', x: 600, y: 300 });
   await P({ op: 'click', page: true, sel: '#email' });
   await step(600);
-  await P({ op: 'type', page: true, sel: '#email', text: 'not-an-email', cps: 12 });
+  await P({ op: 'type', page: true, sel: '#email', value: 'not-an-email', cps: 12 });
   await step(800);
   await P({ op: 'click', page: true, sel: '.contact button[type="submit"]' });
   await step(2600);
-  await P({ op: 'type', page: true, sel: '#email', selectAll: true, text: 'jo@example.com', cps: 12 });
+  await P({ op: 'type', page: true, sel: '#email', selectAll: true, value: 'jo@example.com', cps: 12 });
   await step(800);
   await P({ op: 'click', page: true, sel: '.contact button[type="submit"]' });
   await step(3200);

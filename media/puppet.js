@@ -131,7 +131,7 @@
             if (m.selectAll) { /** @type {HTMLInputElement} */ (n).select(); await sleep(250); }
             else typed = /** @type {HTMLInputElement} */ (n).value;
           } else if (!m.selectAll) typed = n.textContent || '';
-          for (const ch of m.text) {
+          for (const ch of String(m.value ?? '')) {
             typed += ch;
             if (isField) {
               /** @type {HTMLInputElement} */ (n).value = typed;
@@ -145,7 +145,7 @@
           const el = /** @type {HTMLInputElement} */ (h ? h.n : document.activeElement);
           el.focus();
           if (m.replace) { el.value = ''; el.dispatchEvent(new Event('input', { bubbles: true })); }
-          for (const ch of m.text) {
+          for (const ch of String(m.value ?? '')) {
             el.value += ch;
             el.dispatchEvent(new Event('input', { bubbles: true }));
             await sleep(1000 / cps);
