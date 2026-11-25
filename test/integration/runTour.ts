@@ -37,7 +37,8 @@ async function main() {
     vscodeExecutablePath: fs.existsSync(local) ? local : undefined,
     extensionDevelopmentPath: root,
     extensionTestsPath: path.join(__dirname, 'tour.js'),
-    launchArgs: [ws, `--user-data-dir=${userData}`, '--disable-extensions', '--disable-workspace-trust', '--skip-welcome', '--skip-release-notes'],
+    launchArgs: [ws, `--user-data-dir=${userData}`, '--disable-extensions', '--disable-workspace-trust', '--skip-welcome', '--skip-release-notes',
+      ...(process.env.LD_CDP_PORT ? [`--remote-debugging-port=${process.env.LD_CDP_PORT}`] : [])],
   });
 }
 main().catch((e) => {
