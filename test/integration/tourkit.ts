@@ -45,7 +45,8 @@ export async function install(theme = 'canvas'): Promise<LiveDesignApi> {
   await sleep(3800);
   await vscode.commands.executeCommand('extension.open', ID).then(undefined, () => undefined);
   await sleep(3200);
-  await vscode.commands.executeCommand('workbench.extensions.installExtension', ID);
+  // Dev runs (LD_TOUR_MARKET unset) load the local build instead of installing.
+  if (process.env.LD_TOUR_MARKET) await vscode.commands.executeCommand('workbench.extensions.installExtension', ID);
   const ext = await until(() => vscode.extensions.getExtension(ID), 120000);
   await sleep(2500);
   const api = (await ext.activate()) as LiveDesignApi;

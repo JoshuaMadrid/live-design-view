@@ -8,7 +8,7 @@ import { classNamesFor } from '../css/stylesheets';
 
 
 /** Shared HTML scaffolding for the side-panel webviews (Insert, Properties). */
-function panelHtml(webview: vscode.Webview, extensionUri: vscode.Uri, script: string, body: string): string {
+function panelHtml(webview: vscode.Webview, extensionUri: vscode.Uri, script: string, body: string, extraScripts: string[] = []): string {
   const media = (f: string) => webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', f));
   const nonce = makeNonce();
   return `<!DOCTYPE html>
@@ -25,6 +25,7 @@ function panelHtml(webview: vscode.Webview, extensionUri: vscode.Uri, script: st
 <script nonce="${nonce}" src="${media('theme.js')}"></script>
 <script nonce="${nonce}" src="${media('tooltip.js')}"></script>
 ${body}
+${extraScripts.map((f) => `<script nonce="${nonce}" src="${media(f)}"></script>`).join('\n')}
 <script nonce="${nonce}" src="${media(script)}"></script>
 </body>
 </html>`;
@@ -112,7 +113,7 @@ export class PropertiesViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media')],
     };
     trackThemedWebview(view.webview);
-    view.webview.html = panelHtml(view.webview, this.extensionUri, 'properties.js', `<div id="props"></div>`);
+    view.webview.html = panelHtml(view.webview, this.extensionUri, 'properties.js', `<div id="props"></div>`, ['puppet.js']);
     view.webview.onDidReceiveMessage((m) => void this.onMessage(m));
     view.onDidChangeVisibility(() => view.visible && void this.update(true));
   }
@@ -120,10 +121,17 @@ export class PropertiesViewProvider implements vscode.WebviewViewProvider {
   async onMessage(m: any) {
     const s = this.hub.active;
     if (m.type === 'ready') return this.update(true);
+    if (m.type === 'puppetDone') {
+      this.puppetWaiters.get(m.id)?.();
+      this.puppetWaiters.delete(m.id);
+      return;
+    }
     if (!s) return;
     switch (m.type) {
       case 'setAttr':
         return s.setAttr(m.id, m.name, m.value);
+      case 'setTitle':
+        return setPageTitle(s.document, String(m.value ?? ''));
       case 'setBool':
         return s.setBool(m.id, m.name, !!m.on);
       case 'setClasses':
@@ -170,13 +178,51 @@ export class PropertiesViewProvider implements vscode.WebviewViewProvider {
       this.classes = await classNamesFor(s.model, s.document.uri);
       this.classesFor = s.document.uri.toString();
     }
-    const info = s?.selectionInfo() ?? null;
+    let info: any = s?.selectionInfo() ?? null;
+    if (info && info.tag === 'body') info = { ...info, pageTitle: pageTitleOf(s!.document.getText()) };
     if (seq !== this.updateSeq) return; // a newer update is on its way
     this.lastPayload = { info };
     // HTML attributes only — styling lives in the Styles panel.
     void this.view?.webview.postMessage({ type: 'selection', info, hasSession: !!s, classes: this.classes });
   }
 
+  private puppetWaiters = new Map<number, () => void>();
+  private puppetSeq = 0;
+  /** Demo hook: drive the panel with the drawn pointer (see media/puppet.js); resolves when the step finishes. */
+  puppet(action: Record<string, unknown>, timeoutMs = 15000): Promise<void> {
+    const id = ++this.puppetSeq;
+    return new Promise((resolve) => {
+      const t = setTimeout(() => { this.puppetWaiters.delete(id); resolve(); }, timeoutMs);
+      this.puppetWaiters.set(id, () => { clearTimeout(t); resolve(); });
+      void this.view?.webview.postMessage({ type: 'puppet', id, ...action });
+    });
+  }
+
   /** Last state sent to the panel (tests). */
   lastPayload: { info: unknown } | undefined;
+}
+
+const TITLE_RE = /<title\b[^>]*>([\s\S]*?)<\/title>/i;
+
+/** Text of the page's <title>, or '' if there is none. */
+export function pageTitleOf(html: string): string {
+  return TITLE_RE.exec(html)?.[1].trim() ?? '';
+}
+
+/** Sets the page's <title> text, adding a <title> to <head> if the page has none. */
+async function setPageTitle(doc: vscode.TextDocument, title: string) {
+  const text = doc.getText();
+  const esc = title.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const m = TITLE_RE.exec(text);
+  const we = new vscode.WorkspaceEdit();
+  if (m) {
+    const start = m.index + m[0].indexOf('>') + 1;
+    we.replace(doc.uri, new vscode.Range(doc.positionAt(start), doc.positionAt(start + m[1].length)), esc);
+  } else {
+    const head = /<head\b[^>]*>/i.exec(text);
+    if (!head) return;
+    const at = head.index + head[0].length;
+    we.insert(doc.uri, doc.positionAt(at), `\n  <title>${esc}</title>`);
+  }
+  await vscode.workspace.applyEdit(we);
 }

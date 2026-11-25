@@ -14,6 +14,12 @@
 
   window.addEventListener('message', (ev) => {
     const m = ev.data;
+    if (m.type === 'puppet') {
+      const w = /** @type {any} */ (window);
+      w.ldPuppetDone = (id) => post({ type: 'puppetDone', id });
+      if (w.ldPuppet) w.ldPuppet(m);
+      return;
+    }
     if (m.type !== 'selection') return;
     const sameEl = info && m.info && info.id === m.info.id && info.tag === m.info.tag;
     const active = /** @type {HTMLInputElement|null} */ (document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) ? document.activeElement : null);
@@ -137,6 +143,8 @@
         return { icon: 'symbol-text', idLabel: 'ID', fields: [FORMAT, T('title', 'Title')], bools: [] };
       case 'div':
         return { icon: 'code', idLabel: 'Div ID', fields: [T('title', 'Title'), T('role', 'Role')], bools: [B('hidden')] };
+      case 'body':
+        return { icon: 'file-code', idLabel: 'ID', fields: [{ kind: 'pageTitle', label: 'Page title' }], bools: [] };
       default:
         return { icon: 'symbol-structure', idLabel: 'ID', fields: [T('title', 'Title'), T('role', 'Role'), T('lang', 'Lang', { small: true })], bools: [B('hidden')] };
     }
@@ -164,6 +172,7 @@
     if (key === 'class') return (info.attrs.class || '').trim().split(/\s+/).filter(Boolean).join(' ');
     if (key === 'link') return info.parentLink ? info.parentLink.href : '';
     if (key === 'linkTarget') return info.parentLink ? info.parentLink.target : '';
+    if (key === 'pageTitle') return info.pageTitle ?? '';
     return info.attrs[key] ?? '';
   }
 
@@ -218,9 +227,14 @@
     const wrap = (control) => h('label', { class: 'pi-field' + (f.small ? ' small' : '') }, h('span', { class: 'pi-label', text: f.label }), control);
     if (f.kind === 'format') {
       const opts = [['p', 'Paragraph'], ['h1', 'Heading 1'], ['h2', 'Heading 2'], ['h3', 'Heading 3'], ['h4', 'Heading 4'], ['h5', 'Heading 5'], ['h6', 'Heading 6'], ['pre', 'Preformatted'], ['div', 'None (div)']];
-      return wrap(h('select', { disabled: ro, onchange: (e) => post({ type: 'renameTag', id: info.id, tag: /** @type {HTMLSelectElement} */ (e.target).value }) },
+      return wrap(h('select', { disabled: ro, 'aria-label': 'Format', onchange: (e) => post({ type: 'renameTag', id: info.id, tag: /** @type {HTMLSelectElement} */ (e.target).value }) },
         ...opts.map(([v, l]) => h('option', { value: v, selected: v === info.tag, text: l })),
         opts.some(([v]) => v === info.tag) ? null : h('option', { value: info.tag, selected: true, text: info.tag })));
+    }
+    if (f.kind === 'pageTitle') {
+      // The document's <title> (lives in <head>, so it's edited from the body's fields).
+      const value = info.pageTitle ?? '';
+      return wrap(input('pageTitle', value, ro, (v) => post({ type: 'setTitle', value: v }), 'The page title, shown in the browser tab'));
     }
     if (f.kind === 'options') {
       return wrap(h('button', { class: 'pill', disabled: ro, onclick: () => { optionsOpen = !optionsOpen; build(true); } }, h('span', { text: `${optionsOpen ? 'Hide' : 'Edit'} (${(info.options || []).length})` })));
