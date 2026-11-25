@@ -124,6 +124,8 @@ export async function run(): Promise<void> {
   // 7. Style it in the Styles panel
   mark('styles');
   await C({ op: 'show', x: 120, y: 120 });
+  await C({ op: 'click', sel: '.show-set input' });
+  await step(1000);
   await C({ op: 'type', sel: 'input[data-focus-key="p:background-color"]', replace: true, value: '#f6e7cf', change: true, cps: 10 });
   await step(2400);
   await C({ op: 'type', sel: 'input[data-focus-key="u:padding-top"]', replace: true, value: '18', change: true, cps: 6 });
