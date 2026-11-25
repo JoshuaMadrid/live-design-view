@@ -36,21 +36,16 @@ Built for static sites: HTML, CSS, vanilla JS and jQuery. Tailwind, shadcn/ui-st
 
 ## Install
 
-**From the .vsix**
+**VS Code:** open the Extensions view, search for **Live Design View**, and click **Install**.
 
-```bash
-code --install-extension live-design-view-0.1.0.vsix
-```
+**Cursor, VSCodium, Windsurf and other editors:**
 
-Or in VS Code: Extensions view → `…` menu → **Install from VSIX…**
+1. Download [live-design-view.vsix](https://github.com/JoshuaMadrid/live-design-view/releases/latest/download/live-design-view.vsix) (always the latest version).
+2. In the editor, open the Extensions view → **⋯** menu → **Install from VSIX…** and pick the file.
 
-**From source (Extension Development Host)**
+Then open any `.html` file and click **Design** or **Split** in the editor title bar or the status bar.
 
-```bash
-npm install
-```
-
-Open the folder in VS Code and press **F5**. A second VS Code window opens with the extension loaded and the sample `test-site/` folder open. Open `index.html` and click the **Live** (eye) or **Split** button in the editor title bar.
+**From source:** run `npm install`, open the folder in VS Code and press **F5**. A second window opens with the extension loaded and the sample `test-site/` folder.
 
 ---
 
