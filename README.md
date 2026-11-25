@@ -2,9 +2,13 @@
 
 A **Code / Split / Design** workflow for plain HTML files in VS Code. Select elements on a live rendering of your page, insert tags, wrap and nest them, edit text inline, and adjust attributes. Every change is written back into the real `.html` file as a small text edit, so undo/redo, the dirty marker, save and git all behave normally.
 
-![Workspace layout in the Modern theme](docs/theme-modern.jpg)
+[![Live Design View: insert, edit and style elements on the page](docs/demo.gif)](https://github.com/JoshuaMadrid/live-design-view/releases/download/v1.0.3/live-design-view-tutorial.mp4)
+
+▶ **[Watch the full tutorial](https://github.com/JoshuaMadrid/live-design-view/releases/download/v1.0.3/live-design-view-tutorial.mp4)** (2:42, no narration): install, Design view, inserting and editing, classes and styles, layout, components, links, form testing and the audit.
 
 ## Layout and themes
+
+![Workspace layout in the Modern theme](docs/theme-modern.jpg)
 
 **Workspace layout.** It's set up the first time a Design view opens; the layout button in the Design toolbar, or **Live Design: Apply Workspace Layout**, re-applies it.
 
