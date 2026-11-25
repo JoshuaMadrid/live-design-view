@@ -67,10 +67,9 @@ export async function run(): Promise<void> {
 
   // 2. The head: title, description, favicon, fonts, stylesheet
   mark('head');
-  const html = await editorFor(index);
-  await replaceText(html, 'Untitled Document', 'Forte Coffee &middot; Start on the right foot', undefined, 30);
-  await insertAfter(html, '</title>', '\n  <meta name="description" content="Bright, bold beans for people who do their best thinking at a corner table. Three roasts, fresh every morning.">\n  <link rel="icon" href="images/favicon.svg">\n', undefined, 60);
-  await insertAfter(html, '<link rel="icon" href="images/favicon.svg">\n', '\n  <link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@800;900&display=swap" rel="stylesheet">\n\n  <link rel="stylesheet" href="css/styles.css">', undefined, 160);
+  await replaceText(await editorFor(index), 'Untitled Document', 'Forte Coffee &middot; Start on the right foot', undefined, 30);
+  await insertAfter(await editorFor(index), '</title>', '\n  <meta name="description" content="Bright, bold beans for people who do their best thinking at a corner table. Three roasts, fresh every morning.">\n  <link rel="icon" href="images/favicon.svg">\n', undefined, 60);
+  await insertAfter(await editorFor(index), '<link rel="icon" href="images/favicon.svg">\n', '\n  <link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@800;900&display=swap" rel="stylesheet">\n\n  <link rel="stylesheet" href="css/styles.css">', undefined, 160);
   await pause(1200);
 
   // 3. Base CSS: colours, type, images
@@ -132,7 +131,7 @@ img {
 
   // 4. The header and nav
   mark('header');
-  await insertAfter(html, '<body>', `
+  await insertAfter(await editorFor(index), '<body>', `
 
 <header class="site-header">
   <a class="logo" href="index.html">
@@ -176,9 +175,7 @@ nav a[aria-current="page"] {
 }
 `);
   s = await session(api, index);
-  await vscode.commands.executeCommand('liveDesign.liveView', index);
-  s = await session(api, index);
-  await pause(1600);
+  await pause(1200);
   await P({ op: 'show', x: 500, y: 200 });
 
   // 5. The hero, from the Elements bar
@@ -205,7 +202,7 @@ nav a[aria-current="page"] {
   await attr('src', 'images/cups-tall.png');
   await attr('alt', 'Two blue Good Morning cups of Forte Coffee, with the lids popping off');
   // the two orange words
-  await replaceText(html, 'right foot</h1>', '<span class="accent">right foot</span></h1>', undefined, 30);
+  await replaceText(await editorFor(index), 'right foot</h1>', '<span class="accent">right foot</span></h1>', undefined, 30);
   await pause(800);
 
   // 6. Style the hero and the button in the Styles panel
