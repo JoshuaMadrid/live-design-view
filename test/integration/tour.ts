@@ -50,6 +50,18 @@ export async function run(): Promise<void> {
   };
   const step = (ms = 1100) => sleep(ms);
 
+  // 0. Find it: Extensions view, search "Live Design View", open its Marketplace page
+  mark('install');
+  await vscode.commands.executeCommand('workbench.view.extensions');
+  await sleep(1500);
+  await vscode.commands.executeCommand('workbench.extensions.search', 'Live Design View');
+  await sleep(4500);
+  await vscode.commands.executeCommand('extension.open', 'joshuamadrid.live-design-view').then(undefined, () => undefined);
+  await sleep(5000);
+  await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+  await vscode.commands.executeCommand('workbench.view.explorer');
+  await sleep(1200);
+
   // 1. Open in Design view (workspace layout appears)
   mark('design');
   await vscode.commands.executeCommand('liveDesign.liveView', index);
