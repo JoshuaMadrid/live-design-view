@@ -46,7 +46,7 @@ async function main() {
   const ctx = await esbuild.context(
     tests
       ? {
-          entryPoints: ['test/integration/runTest.ts', 'test/integration/index.ts', 'test/integration/live.test.ts', 'test/integration/demo.ts', 'test/integration/runTour.ts', 'test/integration/tour.ts'],
+          entryPoints: ['test/integration/runTest.ts', 'test/integration/index.ts', 'test/integration/live.test.ts', 'test/integration/demo.ts', 'test/integration/runTour.ts', 'test/integration/tour.ts', 'test/integration/p10.ts'],
           bundle: true,
           format: 'cjs',
           platform: 'node',

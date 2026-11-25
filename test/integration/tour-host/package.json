@@ -1,0 +1,8 @@
+{
+  "name": "ldv-tour-host",
+  "displayName": "Tour host",
+  "publisher": "local",
+  "version": "0.0.0",
+  "private": true,
+  "engines": { "vscode": "^1.100.0" }
+}

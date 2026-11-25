@@ -7,9 +7,13 @@ import { runTests } from '@vscode/test-electron';
 async function main() {
   const root = path.resolve(__dirname, '../..');
   const dir = process.env.LD_TOUR_DIR!;
-  const ws = path.join(dir, 'my-site');
+  // LD_TOUR_SITE: folder to start from (default: the sample site); LD_TOUR_FOLDER: its name on screen.
+  const ws = path.join(dir, process.env.LD_TOUR_FOLDER || 'my-site');
   fs.rmSync(ws, { recursive: true, force: true });
-  fs.cpSync(path.join(root, 'test-site'), ws, { recursive: true });
+  fs.cpSync(process.env.LD_TOUR_SITE || path.join(root, 'test-site'), ws, { recursive: true });
+  // LD_TOUR_MARKET=1: start with no extensions at all; the tour installs Live Design View from the Marketplace.
+  const market = !!process.env.LD_TOUR_MARKET;
+  const extDir = fs.mkdtempSync('/tmp/ldx-');
   const userData = fs.mkdtempSync('/tmp/ldt-');
   fs.mkdirSync(path.join(userData, 'User'), { recursive: true });
   fs.writeFileSync(path.join(userData, 'User', 'settings.json'), JSON.stringify({
@@ -35,9 +39,9 @@ async function main() {
   const local = '/Applications/Visual Studio Code.app/Contents/MacOS/Code';
   await runTests({
     vscodeExecutablePath: fs.existsSync(local) ? local : undefined,
-    extensionDevelopmentPath: root,
-    extensionTestsPath: path.join(__dirname, 'tour.js'),
-    launchArgs: [ws, `--user-data-dir=${userData}`, '--disable-extensions', '--disable-workspace-trust', '--skip-welcome', '--skip-release-notes',
+    extensionDevelopmentPath: market ? path.join(root, 'test/integration/tour-host') : root,
+    extensionTestsPath: path.join(__dirname, process.env.LD_TOUR_SCRIPT || 'tour.js'),
+    launchArgs: [ws, `--user-data-dir=${userData}`, ...(market ? [`--extensions-dir=${extDir}`] : ['--disable-extensions']), '--disable-workspace-trust', '--skip-welcome', '--skip-release-notes',
       ...(process.env.LD_CDP_PORT ? [`--remote-debugging-port=${process.env.LD_CDP_PORT}`] : [])],
   });
 }
