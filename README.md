@@ -306,7 +306,7 @@ The pulse button (or **Live Design: Run Lighthouse Report**) runs the real **Lig
   - **Drag** it to change the value live. Shift snaps to 10; Alt changes both opposite sides (padding / margin).
   - Dragging the free space in a *space-between* flex sets a fixed gap and leaves Auto mode.
 
-  **Grid inspector** (built on Chrome/Firefox DevTools' grid overlay and 's grid editor):
+  **Grid inspector** (like a browser's devtools grid overlay, but editable):
   - Slim **column / row headers** show each track's computed size.
   - **Line numbers** (1, 2, 3…) sit on the track boundaries.
   - **Click a header** to set that track's size (`1fr`, `240px`, `auto`, `minmax(…)`).
@@ -322,6 +322,8 @@ The pulse button (or **Live Design: Run Lighthouse Report**) runs the real **Lig
   The status bar of the Design view says which rule it went to. Everything is one undo step.
 
   ![Grid inspector](docs/grid-inspector.jpg)
+  - **Subgrid:** an element with `grid-template-columns: subgrid` (or rows) has no tracks of its own; it uses the parent grid's tracks it spans. Its headers and line numbers are drawn dashed in teal, sized from the parent's tracks, with its own line numbers (1, 2, 3…). Clicking a subgrid header selects the parent grid, where those tracks are edited; there's no **+** on a subgridded axis.
+- **Show all grid & flex** (grid button in the toolbar): outlines every grid (tracks and hatched gaps) and flex container (dotted items) on the page at once, each in its own colour, with a small `grid` / `flex` / `subgrid` badge. Click a badge to select that element; the selected one keeps the full editable overlay. The setting is remembered.
 - **Outlines** (ruler button): empty elements get a dashed outline and a minimum height, so you can see them and drop into them. This only affects the Design view, never your file.
 - **Drag to move:** press on the selected element (or its blue chip) and drag. The blue line or box shows where it will land (before / after / inside), as with Insert drags. It can't be dropped into itself, and `Esc` cancels.
 

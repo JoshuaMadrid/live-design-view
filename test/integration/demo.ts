@@ -66,6 +66,22 @@ export async function run(): Promise<void> {
     await sleep(600);
     await api.css.onMessage({ type: 'mode', mode: 'all' });
   }
+  if (stage === 'grids') {
+    await vscode.commands.executeCommand('workbench.action.closePanel');
+    const feat = s.model.nodes.find((n) => n.attrs.some((a) => a.name === 'id' && a.value === 'features'))!;
+    const we = new vscode.WorkspaceEdit();
+    we.insert(s.document.uri, s.document.positionAt(feat.stEnd), '\n      <div class="sg-parent" style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 12px; padding: 8px; background: #f3e9da;">\n        <div class="sg-child" style="grid-column: 1 / 4; display: grid; grid-template-columns: subgrid; padding: 6px 0; background: #e8dcc8;"><span>One</span><span>Two</span><span>Three</span></div>\n        <div>A</div><div>B</div><div>C</div>\n      </div>');
+    await vscode.workspace.applyEdit(we);
+    await sleep(1200);
+    s.testAction({ kind: 'clickButton', selector: '#toggleAllLayouts' });
+    let child;
+    for (let i = 0; i < 50 && !child; i++) {
+      child = s.model.nodes.find((n) => n.attrs.some((a) => a.name === 'class' && a.value === 'sg-child'));
+      if (!child) await sleep(100);
+    }
+    await sleep(800);
+    if (child) s.select(child.id, { scrollCanvas: true });
+  }
   if (stage === 'rules') {
     await sleep(1500);
     await vscode.commands.executeCommand('workbench.action.closePanel');

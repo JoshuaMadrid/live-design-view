@@ -1120,4 +1120,49 @@ suite('Live Design View', () => {
     await vscode.commands.executeCommand('workbench.action.closeMessages').then(undefined, () => undefined);
     await setInteract(session, false);
   });
+
+  test('40. Subgrid uses the parent grid tracks; Show all outlines every grid and flex container', async () => {
+    const before = text();
+    await setInteract(session, false);
+    const feat = session.model.nodes.find((n) => n.attrs.some((a) => a.name === 'id' && a.value === 'features'))!;
+    const we = new vscode.WorkspaceEdit();
+    we.insert(doc.uri, doc.positionAt(feat.stEnd), '\n      <div class="sg-parent" style="display: grid; grid-template-columns: 100px 150px 200px; column-gap: 10px;">\n        <div class="sg-child" style="grid-column: 1 / 4; display: grid; grid-template-columns: subgrid;"><span>a</span><span>b</span><span>c</span></div>\n      </div>');
+    let v = session.currentRenderVersion;
+    await vscode.workspace.applyEdit(we);
+    await session.waitForRender(v + 1);
+    const child = session.model.nodes.find((n) => n.attrs.some((a) => a.name === 'class' && a.value === 'sg-child'))!;
+    const parent = session.model.nodes[child.parent!];
+    session.select(child.id, { scrollCanvas: true });
+    await settle();
+    await sleep(200);
+    const st = await session.boxModelStats();
+    assert.strictEqual(st.sub, 3, 'three subgrid column headers: ' + JSON.stringify(st));
+    assert.deepStrictEqual(st.subLabels, ['100px', '150px', '200px'], 'sizes come from the parent tracks');
+    assert.strictEqual(st.subTracks, 3);
+    // clicking a subgrid header selects the parent grid (where the tracks are edited)
+    session.testAction({ kind: 'overlayPointer', selector: '#boxModel .bm-gh.sub' });
+    await until(() => session.selectedId === parent.id, 'parent grid selected');
+    await sleep(200);
+    const ps = await session.boxModelStats();
+    assert.strictEqual(ps.sub, 0);
+    assert.ok(ps.heads >= 3, 'parent shows its own editable headers');
+    // Show all
+    let ui = await session.uiState();
+    assert.strictEqual(ui.allLayouts, 'false');
+    session.testAction({ kind: 'clickButton', selector: '#toggleAllLayouts' });
+    await sleep(300);
+    ui = await session.uiState();
+    assert.strictEqual(ui.allLayouts, 'true');
+    for (const k of ['flex', 'subgrid']) assert.ok(ui.layoutBadges.includes(k), k + ' badge in ' + ui.layoutBadges.join(','));
+    assert.ok(!ui.layoutBadges.includes('grid') || ui.layoutBadges.filter((b: string) => b === 'grid').length >= 1);
+    assert.ok(ui.layoutPieces > ui.layoutBadges.length, 'outlines drawn');
+    // a badge selects its element
+    session.testAction({ kind: 'overlayPointer', selector: '#layoutAll .la-badge' });
+    await sleep(200);
+    assert.ok(session.selectedId !== undefined);
+    session.testAction({ kind: 'clickButton', selector: '#toggleAllLayouts' });
+    await sleep(200);
+    assert.strictEqual((await session.uiState()).layoutPieces, 0);
+    await restore(before);
+  });
 });

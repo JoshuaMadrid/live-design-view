@@ -109,6 +109,7 @@
         const el = elById(state.selectedId);
         if (m.scroll && el) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         drawSelection();
+        drawAllLayouts();
         buildCrumbs();
         break;
       }
@@ -525,6 +526,11 @@
   bm.id = 'boxModel';
   bm.setAttribute('aria-hidden', 'true');
   $('#overlay').prepend(bm);
+  /** "Show all" layer: every grid / flex container on the page, one colour each. */
+  let showAll = saved.showAllLayouts === true;
+  const allLayer = document.createElement('div');
+  allLayer.id = 'layoutAll';
+  $('#overlay').prepend(allLayer);
 
   /** Edit info for interactive overlay pieces (gap / margin / padding strips, grid headers). */
   const bmEdit = new WeakMap();
@@ -604,7 +610,7 @@
     });
     const between = /space-(between|around|evenly)/.test(cs.justifyContent);
 
-    if (/grid/.test(display)) drawGrid(cs, contentBox, n, borderBox);
+    if (/grid/.test(display)) drawGrid(el, borderBox);
     else if (/flex/.test(display) && kids.length > 1) {
       const column = /column/.test(cs.flexDirection);
       const rects = kids.map((c) => toCanvas(c.getBoundingClientRect()));
@@ -661,67 +667,121 @@
 
   // ---- Grid inspector (devtools-style overlay + track headers) ----
 
-  function drawGrid(cs, box, n, border) {
-    const tracksOf = (v) => v.split(/\s+/).map(parseFloat).filter((x) => Number.isFinite(x));
-    const cols = tracksOf(cs.gridTemplateColumns);
-    const rows = tracksOf(cs.gridTemplateRows);
+  /** Border box of a page element in canvas coordinates. */
+  function canvasBox(el) {
+    const fr = state.front.getBoundingClientRect();
+    const cr = els.canvas.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return { left: fr.left - cr.left + r.left, top: fr.top - cr.top + r.top, width: r.width, height: r.height };
+  }
+
+  /**
+   * Track geometry of a grid in canvas coordinates: [{ start, size, parentIndex? }] per axis.
+   * A subgridded axis has no tracks of its own (the browser reports "subgrid"); it uses the
+   * parent grid's tracks that it spans, clipped to its content box.
+   */
+  function gridGeometry(el, depth = 0) {
+    const win = el.ownerDocument.defaultView;
+    const cs = win.getComputedStyle(el);
+    const n = (p) => parseFloat(cs.getPropertyValue(p)) || 0;
+    const border = canvasBox(el);
+    const bw = [n('border-top-width'), n('border-right-width'), n('border-bottom-width'), n('border-left-width')];
+    const pd = [n('padding-top'), n('padding-right'), n('padding-bottom'), n('padding-left')];
+    const content = {
+      left: border.left + bw[3] + pd[3], top: border.top + bw[0] + pd[0],
+      width: Math.max(0, border.width - bw[1] - bw[3] - pd[1] - pd[3]), height: Math.max(0, border.height - bw[0] - bw[2] - pd[0] - pd[2]),
+    };
     const cg = n('column-gap');
     const rg = n('row-gap');
-    const colPx = cols.map((w) => fmt(w) + 'px');
-    const rowPx = rows.map((h) => fmt(h) + 'px');
-    // justify-content / align-content shift the whole track set
-    const used = (arr, gap) => arr.reduce((a, b) => a + b, 0) + gap * Math.max(0, arr.length - 1);
-    const offset = (free, mode, count) => (/center/.test(mode) ? free / 2 : /end/.test(mode) ? free : 0) * (count ? 1 : 0);
-    let x0 = box.left + offset(box.width - used(cols, cg), cs.justifyContent, cols.length);
-    let y0 = box.top + offset(box.height - used(rows, rg), cs.alignContent, rows.length);
+    const subC = /^\s*subgrid/.test(cs.gridTemplateColumns);
+    const subR = /^\s*subgrid/.test(cs.gridTemplateRows);
+    const sizes = (v) => v.split(/\s+/).filter((t) => /^-?[\d.]+px$/.test(t)).map(parseFloat);
+    const own = (vals, gap, start, size, mode) => {
+      const used = vals.reduce((x, y) => x + y, 0) + gap * Math.max(0, vals.length - 1);
+      let p = start + (/center/.test(mode) ? (size - used) / 2 : /end/.test(mode) ? size - used : 0) * (vals.length ? 1 : 0);
+      return vals.map((v) => { const t = { start: p, size: v }; p += v + gap; return t; });
+    };
+    let cols = subC ? [] : own(sizes(cs.gridTemplateColumns), cg, content.left, content.width, cs.justifyContent);
+    let rows = subR ? [] : own(sizes(cs.gridTemplateRows), rg, content.top, content.height, cs.alignContent);
+    const parent = el.parentElement;
+    if ((subC || subR) && parent && depth < 6 && /grid/.test(win.getComputedStyle(parent).display)) {
+      const pg = gridGeometry(parent, depth + 1);
+      const clip = (tracks, lo, hi) => tracks
+        .map((t, i) => ({ t, i }))
+        .filter(({ t }) => t.start + t.size > lo + 0.5 && t.start < hi - 0.5)
+        .map(({ t, i }) => { const s0 = Math.max(t.start, lo); return { start: s0, size: Math.min(t.start + t.size, hi) - s0, parentIndex: i }; });
+      if (subC) cols = clip(pg.cols, content.left, content.left + content.width);
+      if (subR) rows = clip(pg.rows, content.top, content.top + content.height);
+    }
+    return { cs, border, content, cols, rows, cg, rg, subC, subR, parent: subC || subR ? parent : null };
+  }
 
-    // Slim header bars just outside the grid's border, line numbers on the boundaries (like browser devtools).
+  function drawGrid(el, border) {
+    const g = gridGeometry(el);
+    const box = g.content;
     const HEAD = 16;
     const headTop = border.top - HEAD - 3 < 0 ? border.top + 2 : border.top - HEAD - 3;
     const headLeft = border.left - HEAD - 3 < 0 ? border.left + 2 : border.left - HEAD - 3;
-
-    // Columns: tracks, gaps, line numbers, header cells
-    let x = x0;
-    cols.forEach((w, i) => {
-      bmRect('bm-track', x, box.top, w, box.height, '');
-      gridHead('col', i, x, headTop, w, HEAD, colPx, cols.length);
-      gridLine(i + 1, i === 0 ? x : x - cg / 2, headTop + HEAD / 2, 'col');
-      x += w;
-      if (i < cols.length - 1) {
-        if (cg > 0) bmRect('bm-gap', x, box.top, cg, box.height, fmt(cg), { props: ['column-gap'], value: cg, axis: 'x', sign: 1, min: 0, title: 'Column gap' });
-        x += cg;
+    const axis = (tracks, kind, sub, gapProp) => {
+      const labels = tracks.map((t) => fmt(t.size) + 'px');
+      const isCol = kind === 'col';
+      tracks.forEach((t, i) => {
+        if (isCol) bmRect('bm-track' + (sub ? ' sub' : ''), t.start, box.top, t.size, box.height, '');
+        else bmRect('bm-track' + (sub ? ' sub' : ''), box.left, t.start, box.width, t.size, '');
+        if (isCol) gridHead('col', i, t.start, headTop, t.size, HEAD, labels, tracks.length, sub ? g : null);
+        else gridHead('row', i, headLeft, t.start, HEAD, t.size, labels, tracks.length, sub ? g : null);
+        const prevEnd = i ? tracks[i - 1].start + tracks[i - 1].size : t.start;
+        const at = i === 0 ? t.start : (prevEnd + t.start) / 2;
+        if (isCol) gridLine(i + 1, at, headTop + HEAD / 2, 'col', sub);
+        else gridLine(i + 1, headLeft + HEAD / 2, at, 'row', sub);
+        const next = tracks[i + 1];
+        if (next) {
+          const gs = t.start + t.size;
+          const gap = next.start - gs;
+          // A subgrid's gaps come from its parent's tracks; only a grid's own gaps are editable here.
+          const edit = sub ? null : { props: [gapProp], value: gap, axis: isCol ? 'x' : 'y', sign: 1, min: 0, title: isCol ? 'Column gap' : 'Row gap' };
+          if (gap >= 1) {
+            if (isCol) bmRect('bm-gap', gs, box.top, gap, box.height, fmt(gap), edit);
+            else bmRect('bm-gap', box.left, gs, box.width, gap, fmt(gap), edit);
+          }
+        }
+      });
+      if (tracks.length) {
+        const end = tracks[tracks.length - 1].start + tracks[tracks.length - 1].size;
+        if (isCol) gridLine(tracks.length + 1, end, headTop + HEAD / 2, 'col', sub);
+        else gridLine(tracks.length + 1, headLeft + HEAD / 2, end, 'row', sub);
+        if (!sub) {
+          if (isCol) gridAdd('columns', end + 10, headTop - 1, labels);
+          else gridAdd('rows', headLeft - 1, end + 10, labels);
+        }
       }
-    });
-    if (cols.length) {
-      gridLine(cols.length + 1, x, headTop + HEAD / 2, 'col');
-      gridAdd('columns', x + 10, headTop - 1, colPx);
-    }
-    // Rows
-    let y = y0;
-    rows.forEach((h, i) => {
-      gridHead('row', i, headLeft, y, HEAD, h, rowPx, rows.length);
-      gridLine(i + 1, headLeft + HEAD / 2, i === 0 ? y : y - rg / 2, 'row');
-      y += h;
-      if (i < rows.length - 1) {
-        if (rg > 0) bmRect('bm-gap', box.left, y, box.width, rg, fmt(rg), { props: ['row-gap'], value: rg, axis: 'y', sign: 1, min: 0, title: 'Row gap' });
-        y += rg;
-      }
-    });
-    if (rows.length) {
-      gridLine(rows.length + 1, headLeft + HEAD / 2, y, 'row');
-      gridAdd('rows', headLeft - 1, y + 10, rowPx);
-    }
+    };
+    axis(g.cols, 'col', g.subC, 'column-gap');
+    axis(g.rows, 'row', g.subR, 'row-gap');
   }
 
-  function gridHead(kind, i, x, y, w, h, computed, count) {
+  function gridHead(kind, i, x, y, w, h, computed, count, sub) {
     const d = document.createElement('div');
-    d.className = 'bm bm-gh bm-gh-' + kind;
+    d.className = 'bm bm-gh bm-gh-' + kind + (sub ? ' sub' : '');
     Object.assign(d.style, { left: x + 'px', top: y + 'px', width: Math.max(w, 1) + 'px', height: Math.max(h, 1) + 'px' });
     const label = document.createElement('span');
     label.className = 'bm-gh-label';
     label.textContent = computed[i];
     d.appendChild(label);
     const axis = kind === 'col' ? 'columns' : 'rows';
+    if (sub) {
+      // Subgrid track: it belongs to the parent grid, so editing happens there.
+      const pi = (kind === 'col' ? sub.cols : sub.rows)[i].parentIndex;
+      d.setAttribute('data-tip', `Subgrid ${kind === 'col' ? 'column' : 'row'} ${i + 1} · ${computed[i]}\nUses the parent grid's ${kind === 'col' ? 'column' : 'row'} ${pi + 1}. Click to select the parent grid and edit its tracks.`);
+      d.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (sub.parent) selectEl(sub.parent);
+        flash(`Subgrid tracks come from the parent grid — selected it so you can edit ${kind === 'col' ? 'column' : 'row'} ${pi + 1}.`);
+      });
+      bm.appendChild(d);
+      return;
+    }
     d.setAttribute('data-tip', `${kind === 'col' ? 'Column' : 'Row'} ${i + 1} · ${computed[i]}\nClick to set its size (1fr, 240px, auto, minmax(…))`);
     d.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.bm-gh-x')) return;
@@ -744,9 +804,9 @@
     bm.appendChild(d);
   }
 
-  function gridLine(num, x, y, kind) {
+  function gridLine(num, x, y, kind, sub) {
     const b = document.createElement('div');
-    b.className = 'bm bm-line bm-line-' + kind;
+    b.className = 'bm bm-line bm-line-' + kind + (sub ? ' sub' : '');
     b.textContent = String(num);
     Object.assign(b.style, { left: x + 'px', top: y + 'px' });
     bm.appendChild(b);
@@ -872,6 +932,74 @@
     drawSelection();
     if (state.dropTarget) drawDrop(state.dropTarget);
     drawAudit();
+    drawAllLayouts();
+  }
+
+  /**
+   * "Show all": outlines every grid (tracks + gaps) and flex container (items) on the page, each in
+   * its own colour, with a badge that selects it. The selected element keeps the editable overlay.
+   */
+  function drawAllLayouts() {
+    allLayer.innerHTML = '';
+    const d = doc();
+    if (!showAll || state.interact || !d || !d.body || !state.front) return;
+    const win = d.defaultView;
+    const cr = els.canvas.getBoundingClientRect();
+    const piece = (cls, b, color) => {
+      if (b.width < 0.5 || b.height < 0.5) return null;
+      const e = document.createElement('div');
+      e.className = cls;
+      e.style.cssText = `left:${b.left}px;top:${b.top}px;width:${b.width}px;height:${b.height}px;--la:${color}`;
+      allLayer.appendChild(e);
+      return e;
+    };
+    let count = 0;
+    for (const el of d.body.querySelectorAll('[data-ld-id]')) {
+      if (count >= 300) break;
+      const cs = win.getComputedStyle(el);
+      const isGrid = /grid/.test(cs.display);
+      const isFlex = /flex/.test(cs.display);
+      if (!isGrid && !isFlex) continue;
+      const b = canvasBox(el);
+      if (b.width < 2 || b.height < 2 || b.top > cr.height || b.top + b.height < 0) continue;
+      const color = `hsl(${(count * 67 + 265) % 360} 78% 58%)`;
+      count++;
+      const g = isGrid ? gridGeometry(el) : null;
+      const kind = g && (g.subC || g.subR) ? 'subgrid' : isGrid ? 'grid' : 'flex';
+      const selected = boxModelOn && ldId(el) === state.selectedId;
+      if (!selected) {
+        piece('la-box', b, color);
+        if (g) {
+          for (const t of g.cols) piece('la-track' + (g.subC ? ' sub' : ''), { left: t.start, top: g.content.top, width: t.size, height: g.content.height }, color);
+          for (const t of g.rows) piece('la-track' + (g.subR ? ' sub' : ''), { left: g.content.left, top: t.start, width: g.content.width, height: t.size }, color);
+          const gaps = (tr, col) => tr.slice(1).forEach((t, i) => {
+            const s0 = tr[i].start + tr[i].size;
+            const w = t.start - s0;
+            if (w >= 1) piece('la-gap', col ? { left: s0, top: g.content.top, width: w, height: g.content.height } : { left: g.content.left, top: s0, width: g.content.width, height: w }, color);
+          });
+          gaps(g.cols, true);
+          gaps(g.rows, false);
+        } else {
+          for (const c of el.children) {
+            const k = win.getComputedStyle(c);
+            if (k.display === 'none' || k.position === 'absolute' || k.position === 'fixed') continue;
+            piece('la-item', canvasBox(c), color);
+          }
+        }
+      }
+      if (selected) continue; // the selection has its own full overlay
+      const badge = document.createElement('button');
+      badge.className = 'la-badge';
+      badge.textContent = kind;
+      // Top-right corner, so it doesn't sit on line numbers / headers at the top-left.
+      // Just outside the top-right corner (inside it when the container reaches the canvas edge).
+      const outside = b.left + b.width + 60 < cr.width;
+      badge.style.cssText = `left:${outside ? b.left + b.width + 3 : Math.min(cr.width - 2, b.left + b.width)}px;top:${Math.max(0, b.top)}px;--la:${color}`;
+      if (outside) badge.classList.add('out');
+      badge.setAttribute('data-tip', `${elLabel(el)} · ${kind}${kind === 'subgrid' ? ' (tracks from the parent grid)' : ''}\nClick to select`);
+      badge.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); selectEl(el); });
+      allLayer.appendChild(badge);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -1782,6 +1910,17 @@
     $('#toggleBox').setAttribute('aria-pressed', String(boxModelOn));
   };
   applyBoxBtn();
+  const applyAllBtn = () => {
+    $('#toggleAllLayouts').classList.toggle('on', showAll);
+    $('#toggleAllLayouts').setAttribute('aria-pressed', String(showAll));
+  };
+  applyAllBtn();
+  $('#toggleAllLayouts').addEventListener('click', () => {
+    showAll = !showAll;
+    applyAllBtn();
+    vscode.setState({ ...(vscode.getState() || {}), showAllLayouts: showAll });
+    drawAll();
+  });
   $('#toggleBox').addEventListener('click', () => {
     boxModelOn = !boxModelOn;
     applyBoxBtn();
@@ -2082,7 +2221,7 @@
       } else if (a.kind === 'boxModel') {
         drawAll();
         const count = (c) => bm.querySelectorAll('.' + c).length;
-        post({ type: 'probeResult', result: { heads: count('bm-gh'), lines: count('bm-line'), adds: count('bm-add'), editable: count('editable'), margin: count('bm-margin'), border: count('bm-border'), padding: count('bm-padding'), gap: count('bm-gap'), track: count('bm-track'), item: count('bm-item'),
+        post({ type: 'probeResult', result: { heads: count('bm-gh'), lines: count('bm-line'), adds: count('bm-add'), editable: count('editable'), margin: count('bm-margin'), border: count('bm-border'), padding: count('bm-padding'), gap: count('bm-gap'), track: count('bm-track'), item: count('bm-item'), sub: bm.querySelectorAll('.bm-gh.sub').length, subTracks: bm.querySelectorAll('.bm-track.sub').length, subLabels: [...bm.querySelectorAll('.bm-gh.sub .bm-gh-label')].map((l) => l.textContent),
           gapLabels: [...bm.querySelectorAll('.bm-gap .bm-label')].map((l) => l.textContent) } });
       } else if (a.kind === 'pageClick') {
         // test hook: click an element inside the page (as the user would in Interact mode)
@@ -2103,6 +2242,11 @@
         let v = null;
         try { v = a.what === 'jqueryui' ? !!(w && w.jQuery && w.jQuery.ui) : a.what === 'jquery' ? !!(w && w.jQuery) : a.what === 'scrollY' ? w.scrollY : null; } catch { v = null; }
         post({ type: 'probeResult', result: v });
+      } else if (a.kind === 'overlayPointer') {
+        // test hook: press an overlay piece (grid header, badge…) in the shell
+        const t = document.querySelector(a.selector);
+        if (!t) throw new Error('no overlay ' + a.selector);
+        t.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 }));
       } else if (a.kind === 'clickButton') {
         // test hook: press a toolbar button
         const b = /** @type {HTMLElement|null} */ (document.querySelector(a.selector));
@@ -2120,6 +2264,9 @@
             boxPieces: (drawAll(), bm.children.length),
             designCss: !!(d && d.querySelector('style[data-ld-design]')),
             auditMarks: document.querySelectorAll('#auditMarks .audit-mark').length,
+            allLayouts: pressed('toggleAllLayouts'),
+            layoutBadges: [...allLayer.querySelectorAll('.la-badge')].map((x) => x.textContent),
+            layoutPieces: allLayer.children.length,
             auditBar: !$('#auditBar').hidden,
             auditScores: [...document.querySelectorAll('#auditScores .ring')].map((r) => r.textContent),
           },

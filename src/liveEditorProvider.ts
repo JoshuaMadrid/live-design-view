@@ -1107,6 +1107,7 @@ export class LiveSession {
     </div>
     <span id="status" role="status" aria-live="polite"></span>
     <button id="toggleBox" class="icon-btn" title="Box model\nShow margin, border, padding, and flex / grid gaps on the selection" aria-pressed="true"><i class="codicon codicon-layers"></i></button>
+    <button id="toggleAllLayouts" class="icon-btn" title="Show all grid &amp; flex\nOutline every grid (tracks and gaps) and flex container (items) on the page, each in its own colour. Click a badge to select it." aria-pressed="false"><i class="codicon codicon-table"></i></button>
     <button id="toggleAids" class="icon-btn on" title="Outlines: show empty elements so you can drop into them" aria-pressed="true"><i class="codicon codicon-symbol-ruler"></i></button>
     <button id="showProps" class="icon-btn" title="Show the Attributes panel"><i class="codicon codicon-layout-panel"></i></button>
     <button id="toggleInsertBar" class="icon-btn" title="Show/hide the Elements bar" aria-pressed="true"><i class="codicon codicon-layout-panel-off"></i></button>

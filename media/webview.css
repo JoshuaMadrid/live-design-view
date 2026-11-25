@@ -299,3 +299,21 @@ body.dragging-el, body.dragging-el * { cursor: grabbing !important; }
 .audit-mark.impact-critical, .audit-mark.impact-serious { background: #e5372c; }
 .audit-mark.impact-moderate { background: #e08d00; color: #111; }
 .audit-mark.impact-minor { background: #777; }
+
+/* Subgrid: tracks borrowed from the parent grid (dashed, teal) */
+.bm-track.sub { outline: 1px dashed rgba(0, 168, 150, 0.8); background: rgba(0, 168, 150, 0.05); }
+.bm-gh.sub { background: rgba(0, 168, 150, 0.14); border: 1px dashed rgba(0, 168, 150, 0.8); color: #00594f; }
+.bm-gh.sub:hover { background: rgba(0, 168, 150, 0.28); }
+.bm-line.sub { background: #00a896; }
+
+/* "Show all" grid & flex layer */
+#layoutAll { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+#layoutAll > div { position: absolute; pointer-events: none; box-sizing: border-box; }
+.la-box { border: 1.5px dashed var(--la); }
+.la-track { outline: 1px solid color-mix(in srgb, var(--la) 55%, transparent); outline-offset: -0.5px; }
+.la-track.sub { outline-style: dashed; }
+.la-gap { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--la) 30%, transparent) 0 2px, transparent 2px 6px); }
+.la-item { outline: 1px dotted var(--la); outline-offset: -1px; }
+.la-badge { position: absolute; transform: translateX(-100%); pointer-events: auto; z-index: 2; height: 14px; padding: 0 5px; border: 0; border-radius: 3px; font: 600 9.5px/14px var(--vscode-font-family, system-ui); color: #fff; background: var(--la); cursor: pointer; opacity: .9; }
+.la-badge:hover { opacity: 1; box-shadow: 0 0 0 1.5px #fff; }
+.la-badge.out { transform: none; }
