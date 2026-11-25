@@ -3,7 +3,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { runTests } from '@vscode/test-electron';
-import { execFileSync } from 'child_process';
 
 async function main() {
   const root = path.resolve(__dirname, '../..');
@@ -36,14 +35,9 @@ async function main() {
     'update.mode': 'none',
     'security.workspace.trust.enabled': false,
     'files.autoSave': 'off',
+    // Counts as trusting the publisher, so the first-install prompt (refused by the test host) is skipped.
+    'extensions.allowed': { 'joshuamadrid.live-design-view': true, '*': true },
   }, null, 2));
-  if (market) {
-    // Same as answering "Trust" in the first-install publisher prompt (the test host refuses dialogs).
-    const gs = path.join(userData, 'User', 'globalStorage');
-    fs.mkdirSync(gs, { recursive: true });
-    const val = JSON.stringify({ joshuamadrid: { publisher: 'joshuamadrid', publisherDisplayName: 'Joshua Madrid' } }).replace(/'/g, "''");
-    execFileSync('sqlite3', [path.join(gs, 'state.vscdb'), `CREATE TABLE IF NOT EXISTS ItemTable (key TEXT UNIQUE ON CONFLICT REPLACE, value BLOB); INSERT INTO ItemTable VALUES ('extensions.trustedPublishers', '${val}');`]);
-  }
   const local = '/Applications/Visual Studio Code.app/Contents/MacOS/Code';
   await runTests({
     vscodeExecutablePath: fs.existsSync(local) ? local : undefined,
