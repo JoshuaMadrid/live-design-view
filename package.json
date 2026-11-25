@@ -1,0 +1,732 @@
+{
+  "name": "live-design-view",
+  "displayName": "Live Design View",
+  "description": "Visual Code / Split / Design design view for plain HTML: select, insert and edit elements on the page, style them in a CSS designer, check accessibility (WCAG), links and forms. Every change is written into your real .html and .css files.",
+  "version": "1.0.1",
+  "publisher": "joshuamadrid",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Visualization",
+    "Snippets",
+    "Linters",
+    "Themes",
+    "Other"
+  ],
+  "keywords": [
+    "html",
+    "visual editor",
+    "wysiwyg",
+    "live preview",
+    "design view",
+    "css designer",
+    "box model",
+    "flexbox",
+    "css grid",
+    "tailwind",
+    "shadcn",
+    "jquery ui",
+    "accessibility",
+    "wcag",
+    "a11y",
+    "seo",
+    "link checker",
+    "forms",
+    "static site",
+    "web design"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:html"
+  ],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "liveDesign.editor",
+        "displayName": "Live Design View",
+        "selector": [
+          {
+            "filenamePattern": "*.html"
+          },
+          {
+            "filenamePattern": "*.htm"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "commands": [
+      {
+        "command": "liveDesign.codeView",
+        "title": "Code View",
+        "category": "Live Design",
+        "icon": "$(code)"
+      },
+      {
+        "command": "liveDesign.splitView",
+        "title": "Split View",
+        "category": "Live Design",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "liveDesign.liveView",
+        "title": "Design View",
+        "category": "Live Design",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "liveDesign.dom.editText",
+        "title": "Edit Text",
+        "icon": "$(edit)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.moveUp",
+        "title": "Move Up",
+        "icon": "$(arrow-up)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.moveDown",
+        "title": "Move Down",
+        "icon": "$(arrow-down)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.delete",
+        "title": "Delete Element",
+        "icon": "$(trash)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.revealSource",
+        "title": "Reveal in Code",
+        "icon": "$(go-to-file)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.insert",
+        "title": "Insert Snippet",
+        "icon": "$(insert)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.saveSelection",
+        "title": "Save Selection as Snippet",
+        "icon": "$(save)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.newFolder",
+        "title": "New Snippet Folder",
+        "icon": "$(new-folder)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.edit",
+        "title": "Edit Snippet",
+        "icon": "$(edit)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.delete",
+        "title": "Delete",
+        "icon": "$(trash)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.refresh",
+        "title": "Refresh Snippets",
+        "icon": "$(refresh)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.snippets.reveal",
+        "title": "Open Snippets Folder",
+        "icon": "$(folder-opened)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.editSelectors",
+        "title": "Edit Class / ID…",
+        "icon": "$(symbol-class)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.click",
+        "title": "Select Element",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.copy",
+        "title": "Copy",
+        "icon": "$(copy)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.cut",
+        "title": "Cut",
+        "icon": "$(clippy)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.paste",
+        "title": "Paste",
+        "icon": "$(clippy)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.pasteAsChild",
+        "title": "Paste As Child",
+        "icon": "$(indent)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.dom.duplicate",
+        "title": "Duplicate",
+        "icon": "$(files)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.showProperties",
+        "title": "Show Attributes Panel",
+        "category": "Live Design",
+        "icon": "$(layout-panel)"
+      },
+      {
+        "command": "liveDesign.chooseTheme",
+        "title": "Choose UI Theme…",
+        "category": "Live Design",
+        "icon": "$(symbol-color)"
+      },
+      {
+        "command": "liveDesign.applyLayout",
+        "title": "Apply Workspace Layout",
+        "category": "Live Design",
+        "icon": "$(layout)"
+      },
+      {
+        "command": "liveDesign.dom.changeTag",
+        "title": "Change Tag…",
+        "icon": "$(replace)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.checkLinks",
+        "title": "Check Links Sitewide",
+        "icon": "$(link)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.audit",
+        "title": "Audit Page (Accessibility, SEO, Best Practices, Forms)",
+        "icon": "$(checklist)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.lighthouse",
+        "title": "Run Lighthouse Report (Chrome)",
+        "icon": "$(pulse)",
+        "category": "Live Design"
+      },
+      {
+        "command": "liveDesign.auditShow",
+        "title": "Show Audit Problems",
+        "category": "Live Design"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "liveDesign.codeView",
+          "group": "navigation@90",
+          "when": "resourceLangId == html || activeCustomEditorId == liveDesign.editor"
+        },
+        {
+          "command": "liveDesign.splitView",
+          "group": "navigation@91",
+          "when": "resourceLangId == html || activeCustomEditorId == liveDesign.editor"
+        },
+        {
+          "command": "liveDesign.liveView",
+          "group": "navigation@92",
+          "when": "resourceLangId == html || activeCustomEditorId == liveDesign.editor"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "liveDesign.codeView",
+          "when": "resourceLangId == html || activeCustomEditorId == liveDesign.editor"
+        },
+        {
+          "command": "liveDesign.splitView",
+          "when": "true"
+        },
+        {
+          "command": "liveDesign.liveView",
+          "when": "true"
+        },
+        {
+          "command": "liveDesign.dom.editText",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.moveUp",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.moveDown",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.delete",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.revealSource",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.snippets.insert",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.snippets.edit",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.snippets.delete",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.editSelectors",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.click",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.copy",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.cut",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.paste",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.pasteAsChild",
+          "when": "false"
+        },
+        {
+          "command": "liveDesign.dom.duplicate",
+          "when": "false"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "liveDesign.dom.editSelectors",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "inline@1"
+        },
+        {
+          "command": "liveDesign.dom.changeTag",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "inline@2"
+        },
+        {
+          "command": "liveDesign.dom.editSelectors",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "1_edit@0"
+        },
+        {
+          "command": "liveDesign.dom.changeTag",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "1_edit@0b"
+        },
+        {
+          "command": "liveDesign.dom.moveUp",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "inline@3"
+        },
+        {
+          "command": "liveDesign.dom.moveDown",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "inline@4"
+        },
+        {
+          "command": "liveDesign.dom.delete",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "inline@5"
+        },
+        {
+          "command": "liveDesign.dom.editText",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "liveDesign.dom.revealSource",
+          "when": "view == liveDesign.dom",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "liveDesign.dom.moveUp",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "2_move@1"
+        },
+        {
+          "command": "liveDesign.dom.moveDown",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "2_move@2"
+        },
+        {
+          "command": "liveDesign.dom.delete",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "3_delete@1"
+        },
+        {
+          "command": "liveDesign.snippets.edit",
+          "when": "view == liveDesign.snippets && viewItem == snippet",
+          "group": "inline@1"
+        },
+        {
+          "command": "liveDesign.snippets.insert",
+          "when": "view == liveDesign.snippets && viewItem == snippet",
+          "group": "1_use@1"
+        },
+        {
+          "command": "liveDesign.snippets.edit",
+          "when": "view == liveDesign.snippets && viewItem == snippet",
+          "group": "1_use@2"
+        },
+        {
+          "command": "liveDesign.snippets.saveSelection",
+          "when": "view == liveDesign.snippets && viewItem == snippetFolder",
+          "group": "inline@1"
+        },
+        {
+          "command": "liveDesign.snippets.saveSelection",
+          "when": "view == liveDesign.snippets && viewItem == snippetFolder",
+          "group": "1_use@1"
+        },
+        {
+          "command": "liveDesign.snippets.delete",
+          "when": "view == liveDesign.snippets",
+          "group": "9_delete@1"
+        },
+        {
+          "command": "liveDesign.snippets.saveSelection",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "4_snippet@1"
+        },
+        {
+          "command": "liveDesign.dom.editSelectors",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "1_edit@0"
+        },
+        {
+          "command": "liveDesign.dom.copy",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "5_clip@1"
+        },
+        {
+          "command": "liveDesign.dom.cut",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "5_clip@2"
+        },
+        {
+          "command": "liveDesign.dom.paste",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "5_clip@3"
+        },
+        {
+          "command": "liveDesign.dom.pasteAsChild",
+          "when": "view == liveDesign.dom",
+          "group": "5_clip@4"
+        },
+        {
+          "command": "liveDesign.dom.duplicate",
+          "when": "view == liveDesign.dom && viewItem == element",
+          "group": "5_clip@5"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "liveDesign.snippets.saveSelection",
+          "when": "view == liveDesign.snippets",
+          "group": "navigation@1"
+        },
+        {
+          "command": "liveDesign.snippets.newFolder",
+          "when": "view == liveDesign.snippets",
+          "group": "navigation@2"
+        },
+        {
+          "command": "liveDesign.snippets.refresh",
+          "when": "view == liveDesign.snippets",
+          "group": "navigation@3"
+        },
+        {
+          "command": "liveDesign.snippets.reveal",
+          "when": "view == liveDesign.snippets",
+          "group": "more@1"
+        },
+        {
+          "command": "liveDesign.liveView",
+          "when": "view == liveDesign.css",
+          "group": "navigation@1"
+        },
+        {
+          "command": "liveDesign.splitView",
+          "when": "view == liveDesign.css",
+          "group": "navigation@2"
+        },
+        {
+          "command": "liveDesign.chooseTheme",
+          "when": "view == liveDesign.css",
+          "group": "navigation@3"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "liveDesign.snippets.saveSelection",
+          "when": "resourceLangId == html && editorHasSelection",
+          "group": "9_liveDesign@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Live Design View",
+      "properties": {
+        "liveDesign.restoreLastMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "When an HTML file is opened, switch it back to the last mode (Split or Design) you used for it."
+        },
+        "liveDesign.renderDelay": {
+          "type": "number",
+          "default": 300,
+          "minimum": 0,
+          "description": "Milliseconds to wait after a document change before re-rendering the Design view."
+        },
+        "liveDesign.snippetsFolder": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Folder that holds your snippet library (one sub-folder per pattern group, one `.html` file per snippet). Leave empty to use the extension's own storage. Point it at a synced or shared folder to share snippets."
+        },
+        "liveDesign.css.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Save a linked `.css` file right after a Styles panel change (unless it already had unsaved edits). Turn off to review changes before saving — the Design view shows unsaved CSS either way."
+        },
+        "liveDesign.insertBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Elements bar (category tabs + element icons) across the top of the Design view."
+        },
+        "liveDesign.uiTheme": {
+          "type": "string",
+          "default": "modern",
+          "enum": [
+            "modern",
+            "canvas",
+            "graphite",
+            "vscode"
+          ],
+          "enumDescriptions": [
+            "Custom modern UI: deep slate, violet accent, rounded cards",
+            "Dark design-tool panels and controls",
+            "Gray panels, boxed headers, blue accent, dense",
+            "Follow the current VS Code color theme"
+          ],
+          "description": "Look of the Design view, Elements bar, Styles panel and Attributes panel. \"Live Design: Choose UI Theme\" can also switch VS Code to the matching color theme."
+        },
+        "liveDesign.applyLayoutOnOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "The first time a Design view opens in a window, arrange the designer layout: files on the left, Styles panel + DOM on the right, Properties at the bottom."
+        },
+        "liveDesign.checkLinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check links in HTML pages as you edit (broken local links and missing #anchors appear in the Problems panel), like link checker."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "liveDesign",
+          "title": "Live Design",
+          "icon": "media/icon-activity.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "liveDesignPanel",
+          "title": "Attributes",
+          "icon": "media/icon-activity.svg"
+        }
+      ],
+      "secondarySidebar": [
+        {
+          "id": "liveDesignRight",
+          "title": "Design",
+          "icon": "media/icon-activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "liveDesign": [
+        {
+          "type": "webview",
+          "id": "liveDesign.insert",
+          "name": "Elements"
+        },
+        {
+          "id": "liveDesign.snippets",
+          "name": "Snippets"
+        }
+      ],
+      "liveDesignPanel": [
+        {
+          "type": "webview",
+          "id": "liveDesign.properties",
+          "name": "Attributes"
+        }
+      ],
+      "liveDesignRight": [
+        {
+          "id": "liveDesign.dom",
+          "name": "Structure"
+        },
+        {
+          "type": "webview",
+          "id": "liveDesign.css",
+          "name": "Styles"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "liveDesign.dom",
+        "contents": "Open an HTML file in Design or Split view to see its elements here.\n[Open Design View](command:liveDesign.liveView)\n[Open Split View](command:liveDesign.splitView)",
+        "when": "!liveDesign.hasSession"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "liveDesign.dom.copy",
+        "key": "ctrl+c",
+        "mac": "cmd+c",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.cut",
+        "key": "ctrl+x",
+        "mac": "cmd+x",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.paste",
+        "key": "ctrl+v",
+        "mac": "cmd+v",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.pasteAsChild",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.duplicate",
+        "key": "ctrl+d",
+        "mac": "cmd+d",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.delete",
+        "key": "delete",
+        "mac": "backspace",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.editSelectors",
+        "key": "f2",
+        "when": "focusedView == liveDesign.dom"
+      },
+      {
+        "command": "liveDesign.dom.changeTag",
+        "key": "shift+f2",
+        "when": "focusedView == liveDesign.dom"
+      }
+    ],
+    "themes": [
+      {
+        "label": "Live Design Modern",
+        "uiTheme": "vs-dark",
+        "path": "./themes/modern-color-theme.json"
+      },
+      {
+        "label": "Live Design Canvas",
+        "uiTheme": "vs-dark",
+        "path": "./themes/canvas-color-theme.json"
+      },
+      {
+        "label": "Live Design Graphite",
+        "uiTheme": "vs-dark",
+        "path": "./themes/graphite-color-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "npm run check-types && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "test:unit": "node --import tsx --test test/unit/*.test.ts",
+    "test:integration": "node esbuild.js && node esbuild.js --tests && node ./out/test/runTest.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "demo": "node esbuild.js && node esbuild.js --tests && LD_DEMO=1 node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.20.7",
+    "@types/vscode": "^1.85.0",
+    "@vscode/codicons": "^0.0.46-24",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.1.1",
+    "esbuild": "^0.28.2",
+    "jquery": "^3.8.0",
+    "mocha": "^12.0.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "axe-core": "4.14.0"
+  },
+  "dependencies": {
+    "parse5": "^8.1.1",
+    "postcss": "^8.5.33"
+  },
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JoshuaMadrid/live-design-view.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JoshuaMadrid/live-design-view/issues"
+  },
+  "homepage": "https://github.com/JoshuaMadrid/live-design-view#readme",
+  "galleryBanner": {
+    "color": "#1E1E2E",
+    "theme": "dark"
+  },
+  "pricing": "Free"
+}

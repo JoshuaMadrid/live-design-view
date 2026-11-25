@@ -1,0 +1,47 @@
+:root {
+  --ink: #2b2118;
+  --paper: #fbf6ee;
+  --glow: #e8a33d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.6;
+}
+
+.site-header { background: var(--ink); padding: 0.75rem 1.5rem; }
+.nav { display: flex; gap: 1.25rem; align-items: center; }
+.nav a { color: var(--paper); text-decoration: none; }
+.nav .brand { font-weight: bold; margin-right: auto; color: var(--glow); }
+
+main { max-width: 860px; margin: 0 auto; padding: 1.5rem; }
+
+.hero { text-align: center; padding: 2.5rem 0; }
+.hero h1 { font-size: 2.2rem; margin: 0 0 0.5rem; }
+.lead { font-size: 1.15rem; }
+.hero img { display: block; margin: 1rem auto; }
+
+.btn {
+  background: var(--glow);
+  color: var(--ink);
+  border: 0;
+  padding: 0.55rem 1.1rem;
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+}
+.details { display: none; }
+.details.is-open { display: block; }
+
+.features ul { padding-left: 1.2rem; }
+.card { min-height: 60px; border: 1px dashed #c9b79c; border-radius: 6px; padding: 1rem; }
+
+.contact form { display: grid; gap: 0.5rem; max-width: 360px; }
+.contact input { padding: 0.45rem; border: 1px solid #c9b79c; border-radius: 4px; font: inherit; }
+
+.site-footer { text-align: center; padding: 1.5rem; border-top: 1px solid #e4d7c3; }

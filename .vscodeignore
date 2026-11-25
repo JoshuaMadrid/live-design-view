@@ -1,0 +1,15 @@
+.vscode/**
+src/**
+test/**
+test-site/**
+out/**
+node_modules/**
+.vscode-test/**
+**/*.map
+**/*.ts
+tsconfig.json
+esbuild.js
+*.vsix
+lighthouse-report.html
+.gitignore
+docs/**

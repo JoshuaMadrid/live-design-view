@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Design Test Site</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="#" class="brand">Lantern &amp; Co.</a>
+      <a href="#features">Features</a>
+      <a href="#contact">Contact</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Handmade lanterns for slow evenings</h1>
+      <p class="lead">Every piece is shaped by hand in our <strong>Kansas City</strong> studio.</p>
+      <img src="images/lantern.svg" alt="A paper lantern" width="160" height="160">
+      <button type="button" id="cta" class="btn">Toggle details</button>
+      <p id="details" class="details">Shipping is free on orders over $50.</p>
+    </section>
+
+    <section id="features" class="features">
+      <h2>Features</h2>
+      <ul>
+        <li>Recycled paper shades</li>
+        <li>Warm LED bulbs</li>
+        <li>Lifetime repairs</li>
+      </ul>
+      <div class="card"></div>
+    </section>
+
+    <section id="contact" class="contact">
+      <h2>Contact</h2>
+      <form action="#" method="post">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com">
+        <button type="submit" class="btn">Send</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year">2026</span> Lantern &amp; Co.</p>
+  </footer>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

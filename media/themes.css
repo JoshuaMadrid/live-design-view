@@ -1,0 +1,271 @@
+/*
+ * Live Design UI themes. Each theme re-points the VS Code theme variables our webviews already
+ * use (so every panel restyles consistently) and adjusts shape: radius, density, typography.
+ *   vscode       – follow the current VS Code color theme (no overrides)
+ *   canvas       – dark design-tool look: #2C2C2C panels, #1E90F0 blue, Inter, 11px, soft 5px radii
+ *   graphite     – gray #323232 panels, #3D7FE0 blue, system type, crisp 2px radii
+ *   modern       – custom: deep slate, violet accent, 8px radii, airy spacing, subtle depth
+ */
+
+/* ---------------------------------------------------------------- Canvas */
+body[data-ld-theme="canvas"] {
+  --ld-blue: #1E90F0;
+  --ld-hover: rgba(13, 153, 255, 0.6);
+  --ld-radius: 5px;
+  --vscode-font-family: "Inter", "SF Pro Text", system-ui, -apple-system, sans-serif;
+  --vscode-font-size: 11px;
+  --vscode-foreground: #ffffff;
+  --vscode-descriptionForeground: #b3b3b3;
+  --vscode-icon-foreground: #e6e6e6;
+  --vscode-editor-background: #1e1e1e;
+  --vscode-sideBar-background: #2c2c2c;
+  --vscode-sideBarSectionHeader-background: #2c2c2c;
+  --vscode-sideBarSectionHeader-foreground: #ffffff;
+  --vscode-editorGroupHeader-tabsBackground: #2c2c2c;
+  --vscode-editorGroupHeader-tabsBorder: #444444;
+  --vscode-panel-border: #444444;
+  --vscode-input-background: #383838;
+  --vscode-input-border: transparent;
+  --vscode-input-foreground: #ffffff;
+  --vscode-input-placeholderForeground: #8c8c8c;
+  --vscode-dropdown-background: #383838;
+  --vscode-dropdown-border: transparent;
+  --vscode-dropdown-foreground: #ffffff;
+  --vscode-focusBorder: #1E90F0;
+  --vscode-button-background: #1E90F0;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #0b85de;
+  --vscode-button-border: #4d4d4d;
+  --vscode-toolbar-hoverBackground: #383838;
+  --vscode-list-hoverBackground: #383838;
+  --vscode-list-activeSelectionBackground: #0c3a5e;
+  --vscode-list-activeSelectionForeground: #ffffff;
+  --vscode-list-focusOutline: #1E90F0;
+  --vscode-menu-background: #1e1e1e;
+  --vscode-menu-foreground: #ffffff;
+  --vscode-menu-selectionBackground: #1E90F0;
+  --vscode-menu-selectionForeground: #ffffff;
+  --vscode-menu-border: #383838;
+  --vscode-editorWidget-background: #1e1e1e;
+  --vscode-editorWidget-border: #383838;
+  --vscode-widget-shadow: rgba(0, 0, 0, 0.5);
+  --vscode-badge-background: #1E90F0;
+  --vscode-badge-foreground: #ffffff;
+  --vscode-inputOption-activeBackground: rgba(13, 153, 255, 0.2);
+  --vscode-inputOption-activeBorder: #1E90F0;
+  --vscode-breadcrumb-background: #2c2c2c;
+  --vscode-breadcrumb-foreground: #b3b3b3;
+  --vscode-breadcrumb-activeSelectionForeground: #ffffff;
+  --vscode-tab-activeForeground: #ffffff;
+  --vscode-tab-inactiveForeground: #a3a3a3;
+  --vscode-tab-activeBorderTop: #ffffff;
+  --vscode-panelTitle-activeBorder: #ffffff;
+}
+
+/* ---------------------------------------------------------------- Graphite */
+body[data-ld-theme="graphite"] {
+  --ld-blue: #3D7FE0;
+  --ld-hover: rgba(38, 128, 235, 0.6);
+  --ld-radius: 2px;
+  --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --vscode-font-size: 13px;
+  --vscode-foreground: #d4d4d4;
+  --vscode-descriptionForeground: #9a9a9a;
+  --vscode-icon-foreground: #c8c8c8;
+  --vscode-editor-background: #1e1e1e;
+  --vscode-sideBar-background: #323232;
+  --vscode-sideBarSectionHeader-background: #282828;
+  --vscode-sideBarSectionHeader-foreground: #e0e0e0;
+  --vscode-editorGroupHeader-tabsBackground: #282828;
+  --vscode-editorGroupHeader-tabsBorder: #1c1c1c;
+  --vscode-panel-border: #232323;
+  --vscode-input-background: #1f1f1f;
+  --vscode-input-border: #4a4a4a;
+  --vscode-input-foreground: #e6e6e6;
+  --vscode-input-placeholderForeground: #7a7a7a;
+  --vscode-dropdown-background: #3c3c3c;
+  --vscode-dropdown-border: #555555;
+  --vscode-dropdown-foreground: #e6e6e6;
+  --vscode-focusBorder: #3D7FE0;
+  --vscode-button-background: #3D7FE0;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #1473e6;
+  --vscode-button-border: #6e6e6e;
+  --vscode-toolbar-hoverBackground: #454545;
+  --vscode-list-hoverBackground: #3d3d3d;
+  --vscode-list-activeSelectionBackground: #34495e;
+  --vscode-list-activeSelectionForeground: #ffffff;
+  --vscode-list-focusOutline: #3D7FE0;
+  --vscode-menu-background: #323232;
+  --vscode-menu-foreground: #e0e0e0;
+  --vscode-menu-selectionBackground: #3D7FE0;
+  --vscode-menu-selectionForeground: #ffffff;
+  --vscode-menu-border: #1c1c1c;
+  --vscode-editorWidget-background: #323232;
+  --vscode-editorWidget-border: #1c1c1c;
+  --vscode-widget-shadow: rgba(0, 0, 0, 0.6);
+  --vscode-badge-background: #3D7FE0;
+  --vscode-badge-foreground: #ffffff;
+  --vscode-inputOption-activeBackground: rgba(38, 128, 235, 0.25);
+  --vscode-inputOption-activeBorder: #3D7FE0;
+  --vscode-breadcrumb-background: #282828;
+  --vscode-breadcrumb-foreground: #b4b4b4;
+  --vscode-breadcrumb-activeSelectionForeground: #ffffff;
+  --vscode-tab-activeForeground: #ffffff;
+  --vscode-tab-inactiveForeground: #a8a8a8;
+  --vscode-tab-activeBorderTop: #3D7FE0;
+  --vscode-panelTitle-activeBorder: #3D7FE0;
+}
+
+/* ---------------------------------------------------------------- Modern (custom) */
+body[data-ld-theme="modern"] {
+  --ld-blue: #7c5cff;
+  --ld-hover: rgba(124, 92, 255, 0.55);
+  --ld-radius: 8px;
+  --vscode-font-family: "Inter", "SF Pro Text", "Segoe UI Variable", system-ui, sans-serif;
+  --vscode-font-size: 12px;
+  --vscode-foreground: #e7e8ec;
+  --vscode-descriptionForeground: #8a8f9c;
+  --vscode-icon-foreground: #c9ccd4;
+  --vscode-editor-background: #0e0f13;
+  --vscode-sideBar-background: #15171c;
+  --vscode-sideBarSectionHeader-background: #15171c;
+  --vscode-sideBarSectionHeader-foreground: #a8adb9;
+  --vscode-editorGroupHeader-tabsBackground: #121318;
+  --vscode-editorGroupHeader-tabsBorder: #23262e;
+  --vscode-panel-border: #23262e;
+  --vscode-input-background: #1c1f26;
+  --vscode-input-border: #2a2e38;
+  --vscode-input-foreground: #e7e8ec;
+  --vscode-input-placeholderForeground: #6b7180;
+  --vscode-dropdown-background: #1c1f26;
+  --vscode-dropdown-border: #2a2e38;
+  --vscode-dropdown-foreground: #e7e8ec;
+  --vscode-focusBorder: #7c5cff;
+  --vscode-button-background: #7c5cff;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #6b4cf0;
+  --vscode-button-border: #2f3340;
+  --vscode-toolbar-hoverBackground: #20232b;
+  --vscode-list-hoverBackground: #1d2028;
+  --vscode-list-activeSelectionBackground: #2a2350;
+  --vscode-list-activeSelectionForeground: #ffffff;
+  --vscode-list-focusOutline: #7c5cff;
+  --vscode-menu-background: #181a20;
+  --vscode-menu-foreground: #e7e8ec;
+  --vscode-menu-selectionBackground: #2a2350;
+  --vscode-menu-selectionForeground: #ffffff;
+  --vscode-menu-border: #2a2e38;
+  --vscode-editorWidget-background: #181a20;
+  --vscode-editorWidget-border: #2a2e38;
+  --vscode-widget-shadow: rgba(0, 0, 0, 0.55);
+  --vscode-badge-background: #7c5cff;
+  --vscode-badge-foreground: #ffffff;
+  --vscode-inputOption-activeBackground: rgba(124, 92, 255, 0.18);
+  --vscode-inputOption-activeBorder: #7c5cff;
+  --vscode-breadcrumb-background: #121318;
+  --vscode-breadcrumb-foreground: #8a8f9c;
+  --vscode-breadcrumb-activeSelectionForeground: #ffffff;
+  --vscode-tab-activeForeground: #ffffff;
+  --vscode-tab-inactiveForeground: #8a8f9c;
+  --vscode-tab-activeBorderTop: #7c5cff;
+  --vscode-panelTitle-activeBorder: #7c5cff;
+}
+
+/* ---------------------------------------------------------------- shared shape tweaks */
+body[data-ld-theme]:not([data-ld-theme="vscode"]) {
+  background: var(--vscode-sideBar-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+/* The Design view's own body is the editor surface. */
+body.ld-canvas[data-ld-theme]:not([data-ld-theme="vscode"]) { background: var(--vscode-editor-background); }
+
+body[data-ld-theme]:not([data-ld-theme="vscode"]) input,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) select,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .ly-field,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .filter-row,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .cta,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .icon-btn,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .tag-btn,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .ib-item,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .seg,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .seg button,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .ly-seg,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .ly-segbtn,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .ly-matrix,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .ly-toggle,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .item,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .cd-list .row,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .menu button,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) #placeMenu button {
+  border-radius: var(--ld-radius);
+}
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .menu,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) #placeMenu,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) #levelMenu,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) .pi-options,
+body[data-ld-theme]:not([data-ld-theme="vscode"]) #emptyState {
+  border-radius: calc(var(--ld-radius) + 4px);
+}
+
+/* Canvas: compact, flat, label-light */
+body[data-ld-theme="canvas"] .pane-head .twisty,
+body[data-ld-theme="canvas"] .panel-title,
+body[data-ld-theme="canvas"] .ctx-title { text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 600; }
+body[data-ld-theme="canvas"] .pname,
+body[data-ld-theme="canvas"] .pi-label,
+body[data-ld-theme="canvas"] .ly-label { font-family: var(--vscode-font-family); font-size: 11px; color: #b3b3b3; opacity: 1; }
+body[data-ld-theme="canvas"] input,
+body[data-ld-theme="canvas"] select { height: 24px; font-size: 11px; }
+body[data-ld-theme="canvas"] .pane { border-bottom-color: #444444; }
+body[data-ld-theme="canvas"] .prop { min-height: 26px; }
+body[data-ld-theme="canvas"] #hudTag { border-radius: 3px 0 0 3px; }
+body[data-ld-theme="canvas"] .chip { border-radius: 4px; }
+
+/* Graphite: dense, boxed headers, pill buttons */
+body[data-ld-theme="graphite"] .pane-head { background: #282828; border-bottom: 1px solid #1c1c1c; }
+body[data-ld-theme="graphite"] .pane-head .twisty { text-transform: none; font-size: 13px; letter-spacing: 0; }
+body[data-ld-theme="graphite"] .pill,
+body[data-ld-theme="graphite"] .cta { border-radius: 14px; border-color: #8a8a8a; }
+body[data-ld-theme="graphite"] .pname { font-family: var(--vscode-font-family); }
+body[data-ld-theme="graphite"] #ibTabs button[aria-selected="true"] { background: #323232; border-bottom-color: transparent; }
+body[data-ld-theme="graphite"] #ibTabs { background: #282828; }
+
+/* Modern: airy spacing, soft depth, gradient accent */
+body[data-ld-theme="modern"] .pane { border-bottom: 0; margin: 6px 8px; background: #181a20; border-radius: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 6px 18px rgba(0,0,0,.25); overflow: hidden; }
+body[data-ld-theme="modern"] .pane-head { height: 30px; padding: 0 8px; }
+body[data-ld-theme="modern"] .pane-head .twisty { text-transform: none; letter-spacing: .01em; font-size: 12px; color: #c9ccd4; }
+body[data-ld-theme="modern"] .seg button.on,
+body[data-ld-theme="modern"] .ly-segbtn.on,
+body[data-ld-theme="modern"] .pill.primary,
+body[data-ld-theme="modern"] #emptyState .primary { background: linear-gradient(135deg, #7c5cff, #5b8cff); color: #fff; box-shadow: 0 4px 14px rgba(124, 92, 255, .35); }
+body[data-ld-theme="modern"] .ly-block { background: #181a20; border-radius: 12px; padding: 12px; border: 1px solid #23262e; margin-bottom: 8px; }
+body[data-ld-theme="modern"] .pname { font-family: var(--vscode-font-family); }
+body[data-ld-theme="modern"] #toolbar { height: 36px; }
+body[data-ld-theme="modern"] #hudTag { border-radius: 6px 0 0 6px; }
+body[data-ld-theme="modern"] #hudAdd { border-radius: 0 6px 6px 0; }
+body[data-ld-theme="modern"] .box.sel { outline-width: 2px; box-shadow: 0 0 0 4px rgba(124, 92, 255, .18); border-radius: 2px; }
+
+/* ---------------------------------------------------------------- tooltips (all themes) */
+.ld-tip {
+  position: fixed;
+  z-index: 1000;
+  max-width: min(240px, calc(100vw - 12px));
+  padding: 5px 8px;
+  border-radius: 5px;
+  background: var(--vscode-editorHoverWidget-background, #1e1e1e);
+  color: var(--vscode-editorHoverWidget-foreground, #ffffff);
+  border: 1px solid var(--vscode-editorHoverWidget-border, rgba(128,128,128,.35));
+  box-shadow: 0 4px 14px var(--vscode-widget-shadow, rgba(0,0,0,.4));
+  font: 12px/1.35 var(--vscode-font-family);
+  pointer-events: none;
+  white-space: pre-line;
+}
+.ld-tip[hidden] { display: none; }
+.ld-tip-head { font-weight: 600; }
+.ld-tip-body { margin-top: 2px; opacity: .72; font-family: var(--vscode-editor-font-family, monospace); font-size: 11px; }
+body[data-ld-theme="canvas"] .ld-tip { background: #1e1e1e; border-color: #383838; border-radius: 4px; font-size: 11px; }
+body[data-ld-theme="graphite"] .ld-tip { background: #424242; border-color: #1c1c1c; border-radius: 2px; }
+body[data-ld-theme="modern"] .ld-tip { background: #1d2028; border-color: #2f3340; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.45); }
