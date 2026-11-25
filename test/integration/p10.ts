@@ -59,7 +59,11 @@ export async function run(): Promise<void> {
   await pause(1200);
   await vscode.commands.executeCommand('liveDesign.splitView', index);
   s = await session(api, index);
-  await pause(2500);
+  await pause(2000);
+  // More room for the page: hide the file list, narrow the code column.
+  await vscode.commands.executeCommand('workbench.action.closeSidebar');
+  await vscode.commands.executeCommand('vscode.setEditorLayout', { orientation: 0, groups: [{ size: 0.3 }, { size: 0.7 }] });
+  await pause(1200);
   await vscode.commands.executeCommand('notifications.clearAll');
   await P({ op: 'show', x: 600, y: 300 });
   await P({ op: 'click', sel: '#scaffoldBtn' });
@@ -233,7 +237,7 @@ nav a[aria-current="page"] {
   mark('beans');
   await pick('section.hero', id(hasClass('hero')));
   await insert('Section', 'After');
-  await addClass('.beans', 'create');
+  await addClass('.beans', 'skip');
   await edit('section.beans h2', 'Our blends');
   await click('section.beans h2');
   await insert('Div', 'After');
@@ -297,7 +301,7 @@ nav a[aria-current="page"] {
   await edit('footer p', 'Forte Coffee · Open every day, 7 to 3');
   await click('footer p');
   await insert('Paragraph', 'After');
-  await edit('footer p:last-child', 'A practice site for GDES 245. Forte is a concept brand.');
+  await edit('footer p:last-child', 'Forte is a concept brand for a class practice.');
 
   // 9. The rest of the CSS
   mark('more-css');
