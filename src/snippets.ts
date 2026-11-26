@@ -1,4 +1,5 @@
 import { SHADCN_GROUPS, SHADCN_SNIPPETS } from './shadcn';
+import { TW_GROUPS, TW_SNIPPETS } from './tailwind';
 import { JQUERY_UI_CSS, JQUERY_UI_ITEMS, JQUERY_UI_JS, JQUERY_UI_SNIPPETS, JQUERY_URL } from './jqueryui';
 /**
  * Starter snippets for the Elements panel.
@@ -190,42 +191,8 @@ s('checkbox-group', 'Checkbox Group', 'checklist', [
 s('fieldset', 'Fieldset', 'symbol-namespace', ['<fieldset>', '\t<legend>Legend</legend>', '</fieldset>']);
 s('datalist', 'Datalist', 'list-flat', ['<datalist id="options">', '\t<option value="Option 1">', '\t<option value="Option 2">', '</datalist>']);
 
-// Tailwind (utility classes; the Tailwind CDN script is added to <head> on first use)
-tw('tw-container', 'Container', 'layout-centered', '<div class="mx-auto max-w-6xl px-4"></div>', 'div');
-tw('tw-flex', 'Flex Row', 'layout-panel-justify', ['<div class="flex items-center gap-4">', '\t<div>Item</div>', '\t<div>Item</div>', '</div>'], 'div');
-tw('tw-grid', 'Grid (3 col)', 'layout', [
-  '<div class="grid grid-cols-1 gap-6 md:grid-cols-3">',
-  '\t<div class="rounded-lg border p-6">One</div>',
-  '\t<div class="rounded-lg border p-6">Two</div>',
-  '\t<div class="rounded-lg border p-6">Three</div>',
-  '</div>',
-], 'div');
-tw('tw-hero', 'Hero', 'star-empty', [
-  '<section class="px-6 py-24 text-center">',
-  '\t<h1 class="text-4xl font-bold tracking-tight sm:text-6xl">Build something great</h1>',
-  '\t<p class="mx-auto mt-6 max-w-2xl text-lg text-gray-600">A short supporting sentence about the product.</p>',
-  '\t<a href="#" class="mt-10 inline-block rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500">Get started</a>',
-  '</section>',
-], 'section');
-tw('tw-card', 'Card', 'preview', [
-  '<div class="max-w-sm rounded-xl border bg-white p-6 shadow-sm">',
-  '\t<h3 class="text-lg font-semibold">Card title</h3>',
-  '\t<p class="mt-2 text-sm text-gray-600">Card description goes here.</p>',
-  '</div>',
-], 'div');
-tw('tw-navbar', 'Navbar', 'compass', [
-  '<nav class="flex items-center justify-between border-b px-6 py-4">',
-  '\t<a href="#" class="font-semibold">Brand</a>',
-  '\t<div class="flex gap-6 text-sm">',
-  '\t\t<a href="#" class="hover:underline">Features</a>',
-  '\t\t<a href="#" class="hover:underline">Pricing</a>',
-  '\t</div>',
-  '</nav>',
-], 'nav');
-tw('tw-button', 'Button', 'record-small', '<button type="button" class="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Button</button>', 'button');
-tw('tw-badge', 'Badge', 'tag', '<span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700">Badge</span>', 'span');
-tw('tw-alert', 'Alert', 'info', '<div class="rounded-md border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800">Heads up! Something needs your attention.</div>', 'div');
-tw('tw-footer', 'Footer', 'layout-panel', ['<footer class="border-t px-6 py-8 text-center text-sm text-gray-500">', '\t<p>&copy; 2026 Company</p>', '</footer>'], 'footer');
+// Tailwind (utility classes; the Tailwind CDN script is added to <head> on first use; list in tailwind.ts)
+for (const t of TW_SNIPPETS) tw(t.key, t.name, t.icon, t.lines, t.tag);
 
 // shadcn/ui look (static HTML + Tailwind; full list in shadcn.ts)
 for (const sc of SHADCN_SNIPPETS) tw(sc.key, sc.name, sc.icon, sc.lines, sc.tag);
@@ -300,7 +267,9 @@ export const INSERT_CATEGORIES: InsertCategory[] = [
   },
   {
     name: 'Tailwind',
-    items: ['tw-container', 'tw-flex', 'tw-grid', '-', 'tw-hero', 'tw-navbar', 'tw-card', 'tw-footer', '-', 'tw-button', 'tw-badge', 'tw-alert'],
+    items: TW_GROUPS[0].items,
+    groups: TW_GROUPS,
+    labels: true,
   },
   {
     name: 'shadcn/ui',

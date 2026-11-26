@@ -29,12 +29,12 @@ export async function run(): Promise<void> {
   };
   const edit = async (sel: string, text: string) => {
     await P({ op: 'dblclick', page: true, sel }); await pause(450);
-    await P({ op: 'type', page: true, sel, selectAll: true, value: text, cps: 40 }); await pause(250);
+    await P({ op: 'type', page: true, sel, selectAll: true, value: text, cps: 15 }); await pause(250);
     s.testAction({ kind: 'key', key: 'Enter' }); await pause(1100);
   };
   const addClass = async (name: string, rule: 'create' | 'skip' | 'none') => {
     await P({ op: 'click', sel: '#hudAdd' }); await pause(350);
-    await P({ op: 'type', sel: '#hudInput', glide: false, value: name, enter: true, cps: 14 }); await pause(1300);
+    await P({ op: 'type', sel: '#hudInput', glide: false, value: name, enter: true, cps: 9 }); await pause(1300);
     if (rule === 'create') { await P({ op: 'click', sel: '#hudRuleCreate' }); await pause(1600); }
     if (rule === 'skip') { await P({ op: 'click', sel: '#hudRuleSkip' }); await pause(600); }
   };
@@ -42,7 +42,7 @@ export async function run(): Promise<void> {
 
   // --- Attributes -------------------------------------------------------------------------
   const attr = async (key: string, value: string) => {
-    await A({ op: 'type', sel: `input[data-key="${key}"]`, replace: true, value, change: true, cps: 30 });
+    await A({ op: 'type', sel: `input[data-key="${key}"]`, replace: true, value, change: true, cps: 14 });
     await pause(1000);
   };
   const parent = async (times = 1) => { for (let i = 0; i < times; i++) { await A({ op: 'click', sel: 'button[aria-label^="Select parent"]' }); await pause(900); } };
@@ -51,13 +51,13 @@ export async function run(): Promise<void> {
   // --- Styles -----------------------------------------------------------------------------
   const props = async (list: Props) => {
     for (const [name, value] of list) {
-      await C({ op: 'type', sel: 'input[data-focus-key="new-prop"]', replace: true, value: name, cps: 34 }); await pause(120);
-      await C({ op: 'type', sel: 'input[data-focus-key="new-val"]', replace: true, value, enter: true, cps: 34 }); await pause(750);
+      await C({ op: 'type', sel: 'input[data-focus-key="new-prop"]', replace: true, value: name, cps: 14 }); await pause(120);
+      await C({ op: 'type', sel: 'input[data-focus-key="new-val"]', replace: true, value, enter: true, cps: 14 }); await pause(750);
     }
   };
   const newRule = async (selector: string, list: Props) => {
     await C({ op: 'click', sel: 'button[aria-label^="Add a rule"]' }); await pause(400);
-    await C({ op: 'type', sel: 'input[data-focus-key="add-selector"]', replace: true, value: selector, enter: true, cps: 22 }); await pause(1200);
+    await C({ op: 'type', sel: 'input[data-focus-key="add-selector"]', replace: true, value: selector, enter: true, cps: 11 }); await pause(1200);
     await props(list);
   };
   const flow = async (dir: 'Horizontal' | 'Vertical') => { await C({ op: 'click', sel: `.ly-segbtn[aria-label="${dir}"]` }); await pause(1000); };
@@ -74,21 +74,26 @@ export async function run(): Promise<void> {
   await pause(1200);
   await vscode.commands.executeCommand('notifications.clearAll');
   await P({ op: 'show', x: 600, y: 300 });
-  await P({ op: 'click', sel: '#scaffoldBtn' });
-  await pause(2200);
 
-  // 2. Page title and a style sheet
-  mark('title-css');
-  await click('body', { fx: 0.5, fy: 0.4 });
-  await attr('pageTitle', 'Second Cup');
+  // 2. Page setup: title, language, a new style sheet and the page's look (a body rule)
+  mark('page-setup');
+  await P({ op: 'click', sel: '#scaffoldBtn' });
+  await pause(1400);
+  const field = async (sel: string, value: string) => { await P({ op: 'type', sel, replace: true, value, cps: 12 }); await pause(500); };
+  await field('#psTitle', 'Second Cup');
+  await field('#psFont', 'Avenir, Helvetica, Arial, sans-serif');
+  await field('#psSize', '18px');
+  await field('#psColor', '#243A30');
+  await field('#psBg', '#F7E1C3');
+  await field('#psMargin', '0');
+  await field('#psPadding', '24px');
+  await pause(800);
+  await P({ op: 'click', sel: '#psApply' });
+  await pause(2600);
   await C({ op: 'show', x: 120, y: 120 });
-  await C({ op: 'click', sel: 'button.cta' });
-  await pause(1600);
-  await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem');
-  await pause(2000);
   await C({ op: 'click', sel: '.show-set input' }); await pause(700);
-  await newRule('body', [['margin', '0'], ['padding', '24px'], ['box-sizing', 'border-box'], ['font-size', '18px'],
-    ['font-family', 'Avenir, Helvetica, Arial, sans-serif'], ['background-color', '#F7E1C3'], ['color', '#243A30']]);
+  await C({ op: 'click', sel: '.cd-list .row .label', text: 'body' }); await pause(1000);
+  await props([['box-sizing', 'border-box']]);
   await newRule('h1, h2, h3', [['margin', '0 0 16px'], ['line-height', '1.1']]);
   await newRule('p', [['margin', '0 0 16px'], ['line-height', '1.5']]);
   await newRule('ul, li', [['margin', '0'], ['padding', '0'], ['list-style', 'none']]);
@@ -398,6 +403,10 @@ export async function run(): Promise<void> {
   await edit('.footer-col:nth-child(4) p:nth-of-type(1) a', 'Shipping');
   await edit('.footer-col:nth-child(4) p:nth-of-type(2) a', 'Returns');
   await edit('.footer-col:nth-child(4) p:nth-of-type(3) a', 'Contact');
+  for (const [col, n, href] of [[3, 1, 'about.html'], [3, 2, 'index.html'], [3, 3, 'about.html'], [4, 1, '#'], [4, 2, '#'], [4, 3, '#']] as const) {
+    await click(`.footer-col:nth-child(${col}) p:nth-of-type(${n}) a`);
+    await attr('href', href);
+  }
   await click('.brand h3');
   await parent(2);
   await insert('Paragraph', 'After');
