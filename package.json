@@ -2,7 +2,7 @@
   "name": "live-design-view",
   "displayName": "Live Design View",
   "description": "Visual Code / Split / Design design view for plain HTML: select, insert and edit elements on the page, style them in a CSS designer, check accessibility (WCAG), links and forms. Every change is written into your real .html and .css files.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "joshuamadrid",
   "license": "MIT",
   "engines": {
