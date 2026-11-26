@@ -1137,11 +1137,22 @@
         iconBtn('trash', `Delete ${name}`, () => post({ type: 'removeProp', prop: name }))) : h('span', { class: 'prop-tools' }));
   }
 
+  /** What's typed in the add-property row; kept across redraws (a style change can redraw mid-typing). */
+  let draft = { rule: '', prop: '', val: '' };
   function addPropRow() {
-    const n = /** @type {HTMLInputElement} */ (h('input', { placeholder: 'property', 'aria-label': 'New property name', 'data-focus-key': 'new-prop', spellcheck: 'false' }));
-    const v = /** @type {HTMLInputElement} */ (h('input', { placeholder: 'value', 'aria-label': 'New property value', 'data-focus-key': 'new-val', spellcheck: 'false',
-      onkeydown: (e) => { if (e.key === 'Enter' && n.value.trim()) post({ type: 'setProp', prop: n.value.trim(), value: v.value }); } }));
-    return h('div', { class: 'prop add-prop' }, n, v, iconBtn('add', 'Add property', () => n.value.trim() && post({ type: 'setProp', prop: n.value.trim(), value: v.value })));
+    if (draft.rule !== st.rule) draft = { rule: st.rule, prop: '', val: '' };
+    const commit = () => {
+      const prop = draft.prop.trim();
+      if (!prop) return;
+      post({ type: 'setProp', prop, value: draft.val });
+      draft = { rule: st.rule, prop: '', val: '' };
+    };
+    const n = /** @type {HTMLInputElement} */ (h('input', { placeholder: 'property', 'aria-label': 'New property name', 'data-focus-key': 'new-prop', spellcheck: 'false', value: draft.prop,
+      oninput: () => { draft.prop = n.value; } }));
+    const v = /** @type {HTMLInputElement} */ (h('input', { placeholder: 'value', 'aria-label': 'New property value', 'data-focus-key': 'new-val', spellcheck: 'false', value: draft.val,
+      oninput: () => { draft.val = v.value; },
+      onkeydown: (e) => { if (e.key === 'Enter') commit(); } }));
+    return h('div', { class: 'prop add-prop' }, n, v, iconBtn('add', 'Add property', commit));
   }
 
   // Menus / messages -------------------------------------------------------------------
