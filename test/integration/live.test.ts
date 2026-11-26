@@ -1165,4 +1165,38 @@ suite('Live Design View', () => {
     assert.strictEqual((await session.uiState()).layoutPieces, 0);
     await restore(before);
   });
+
+  test('41. Page properties: a new page gets title, language, style sheet and a body rule; an existing page is updated', async () => {
+    const { applyPageSetup, readPageSetup } = await import('../../src/pageSetup');
+    const root = vscode.workspace.workspaceFolders![0].uri;
+    const page = vscode.Uri.joinPath(root, 'ps-test.html');
+    const sheet = vscode.Uri.joinPath(root, 'ps-css/site.css');
+    await vscode.workspace.fs.writeFile(page, new Uint8Array());
+    try {
+      const doc = await vscode.workspace.openTextDocument(page);
+      const values = { title: 'Second Cup', lang: 'en', sheet: 'file' as const, sheetPath: 'ps-css/site.css', font: 'Avenir, Helvetica, Arial, sans-serif', size: '18', color: '#243A30', background: '#F7E1C3', margin: '0', padding: '24' };
+      await applyPageSetup(doc, values, []);
+      const html = doc.getText();
+      assert.match(html, /<title>Second Cup<\/title>/);
+      assert.match(html, /<html lang="en">/);
+      assert.match(html, /<link rel="stylesheet" href="ps-css\/site.css">/);
+      const css = new TextDecoder().decode(await vscode.workspace.fs.readFile(sheet));
+      for (const d of ['font-family: Avenir, Helvetica, Arial, sans-serif;', 'font-size: 18px;', 'color: #243A30;', 'background-color: #F7E1C3;', 'margin: 0;', 'padding: 24px;']) assert.ok(css.includes(d), d + ' in ' + css);
+      // read back, change, apply to the existing page
+      const linked = [{ href: 'ps-css/site.css', uri: sheet }];
+      const read = await readPageSetup(doc, linked);
+      assert.strictEqual(read.title, 'Second Cup');
+      assert.strictEqual(read.background, '#F7E1C3');
+      await applyPageSetup(doc, { ...read, title: 'Second Cup Coffee', background: '#FFFFFF' }, linked);
+      assert.match(doc.getText(), /<title>Second Cup Coffee<\/title>/);
+      assert.strictEqual((doc.getText().match(/stylesheet/g) || []).length, 1, 'link not duplicated');
+      const css2 = (await vscode.workspace.openTextDocument(sheet)).getText();
+      assert.ok(css2.includes('background-color: #FFFFFF;') && !css2.includes('#F7E1C3'), css2);
+      assert.strictEqual((css2.match(/body \{/g) || []).length, 1, 'one body rule');
+    } finally {
+      await vscode.commands.executeCommand('workbench.action.revertAndCloseActiveEditor').then(undefined, () => undefined);
+      await vscode.workspace.fs.delete(page).then(undefined, () => undefined);
+      await vscode.workspace.fs.delete(vscode.Uri.joinPath(root, 'ps-css'), { recursive: true }).then(undefined, () => undefined);
+    }
+  });
 });

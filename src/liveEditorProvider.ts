@@ -40,6 +40,7 @@ import { updateInlineStyle } from './css/cssModel';
 import { applyDesignerLayout, trackThemedWebview, uiTheme } from './theme';
 import { linkKind, resolveLocal } from './links';
 import type { AxeReport } from './audit';
+import { applyPageSetup, readPageSetup, type PageSetup } from './pageSetup';
 import { bumpStylesheetVersion, dirtyStylesheet, linkedStylesheets, rebaseCssUrls, resolveHref, selectorNamesFor, stylesheetVersion } from './css/stylesheets';
 import { type Mode, ModeController, VIEW_TYPE } from './modes';
 import type { Hub } from './hub';
@@ -146,6 +147,8 @@ type FromWebview =
   | { type: 'formSubmit'; action: string; method: string; fields: [string, string][]; id: number }
   | { type: 'formInvalid'; field: string; label: string; message: string }
   | { type: 'scaffold' }
+  | { type: 'pageProps' }
+  | { type: 'pageSetup'; values: PageSetup }
   | { type: 'placeInsert'; key: string }
   | { type: 'boxEdit'; id: number; props: Record<string, string>; what: string }
   | { type: 'gridEdit'; id: number; axis: 'columns' | 'rows'; op: 'set' | 'add' | 'remove'; index: number; value?: string; computed: string[]; what: string }
@@ -790,6 +793,14 @@ export class LiveSession {
         return;
       case 'scaffold':
         return this.applyResult(() => scaffoldPage(this.model), true);
+      case 'pageProps': {
+        const values = await readPageSetup(this.document, linkedStylesheets(this.model, this.document.uri));
+        this.post({ type: 'pageProps', values, isNew: !this.document.getText().trim() });
+        return;
+      }
+      case 'pageSetup':
+        await applyPageSetup(this.document, (raw as unknown as { values: PageSetup }).values, linkedStylesheets(this.model, this.document.uri));
+        return;
       case 'setSelectors': {
         const ss = raw as unknown as { id: number; value: string };
         if (ss.id >= 0) await this.setSelectors(ss.id, ss.value);
@@ -1131,6 +1142,7 @@ export class LiveSession {
     <button id="showProps" class="icon-btn" title="Show the Attributes panel"><i class="codicon codicon-layout-panel"></i></button>
     <button id="toggleInsertBar" class="icon-btn" title="Show/hide the Elements bar" aria-pressed="true"><i class="codicon codicon-layout-panel-off"></i></button>
     <button id="toggleInteract" class="icon-btn" title="Interact with the page (links, scripts) instead of selecting" aria-pressed="false"><i class="codicon codicon-play"></i></button>
+    <button id="pagePropsBtn" class="icon-btn" title="Page properties\nTitle, language, style sheet, and the page's font, colors and margins"><i class="codicon codicon-file-code"></i></button>
     <button id="runAudit" class="icon-btn" title="Audit this page (like Lighthouse)\nAccessibility (axe-core, WCAG 2.2 AA), SEO, Best Practices and Forms — results in the Problems panel and on the page"><i class="codicon codicon-checklist"></i></button>
     <button id="chooseTheme" class="icon-btn" title="Choose UI theme (Modern, Canvas, Graphite, VS Code)"><i class="codicon codicon-symbol-color"></i></button>
     <button id="showPanels" class="icon-btn" title="Workspace layout: Styles and Structure on the right, Attributes at the bottom"><i class="codicon codicon-layout"></i></button>
@@ -1187,9 +1199,26 @@ export class LiveSession {
     </div>
     <div id="emptyState" hidden>
       <p><strong>This page is empty.</strong></p>
-      <p>Click an item in the Elements bar to add it, or start from a standard page.</p>
-      <button id="scaffoldBtn" class="primary"><i class="codicon codicon-file-code"></i> Add HTML5 page structure</button>
+      <p>Set up the page (title, style sheet, fonts and colors), or click an item in the Elements bar to add it.</p>
+      <button id="scaffoldBtn" class="primary"><i class="codicon codicon-file-code"></i> Set up this page…</button>
     </div>
+    <form id="pageSetup" hidden aria-label="Page properties" autocomplete="off">
+      <div class="ps-head"><i class="codicon codicon-file-code"></i><span id="psHeading">Page properties</span></div>
+      <div class="ps-section">Document</div>
+      <label class="ps-row"><span>Title</span><input id="psTitle" spellcheck="false"></label>
+      <label class="ps-row"><span>Language</span><input id="psLang" class="ps-short" spellcheck="false" list="psLangs"><datalist id="psLangs"><option value="en"><option value="es"><option value="fr"><option value="de"></datalist></label>
+      <div class="ps-section">Style sheet</div>
+      <label class="ps-row"><span>CSS</span><select id="psSheet"><option value="file">CSS file</option><option value="page">&lt;style&gt; in this page</option><option value="none">None</option></select></label>
+      <label class="ps-row" id="psPathRow"><span>File</span><input id="psPath" spellcheck="false"></label>
+      <div class="ps-section">Page appearance <em>(written as a body rule)</em></div>
+      <label class="ps-row"><span>Font</span><input id="psFont" spellcheck="false" list="psFonts" placeholder="Default"><datalist id="psFonts"><option value="Arial, Helvetica, sans-serif"><option value="Avenir, Helvetica, Arial, sans-serif"><option value="Georgia, 'Times New Roman', serif"><option value="Verdana, Geneva, sans-serif"><option value="'Courier New', Courier, monospace"><option value="system-ui, sans-serif"></datalist></label>
+      <label class="ps-row"><span>Size</span><input id="psSize" class="ps-short" spellcheck="false" placeholder="16px"></label>
+      <label class="ps-row"><span>Text color</span><span class="ps-color"><input type="color" id="psColorPick" tabindex="-1" aria-hidden="true"><input id="psColor" spellcheck="false" placeholder="#000000"></span></label>
+      <label class="ps-row"><span>Background</span><span class="ps-color"><input type="color" id="psBgPick" tabindex="-1" aria-hidden="true"><input id="psBg" spellcheck="false" placeholder="#FFFFFF"></span></label>
+      <label class="ps-row"><span>Margin</span><input id="psMargin" class="ps-short" spellcheck="false" placeholder="8px"></label>
+      <label class="ps-row"><span>Padding</span><input id="psPadding" class="ps-short" spellcheck="false" placeholder="0"></label>
+      <div class="ps-actions"><button type="button" id="psCancel">Cancel</button><button type="submit" id="psApply" class="primary">Create page</button></div>
+    </form>
     <div id="dragShield" hidden></div>
     <div id="placeMenu" hidden role="menu" aria-label="Insert position"></div>
   </div>

@@ -1,3 +1,4 @@
+import { pageTitleOf } from '../pageSetup';
 import * as vscode from 'vscode';
 import type { Hub } from '../hub';
 import { INSERT_CATEGORIES, SNIPPETS } from '../snippets';
@@ -203,11 +204,6 @@ export class PropertiesViewProvider implements vscode.WebviewViewProvider {
 }
 
 const TITLE_RE = /<title\b[^>]*>([\s\S]*?)<\/title>/i;
-
-/** Text of the page's <title>, or '' if there is none. */
-export function pageTitleOf(html: string): string {
-  return TITLE_RE.exec(html)?.[1].trim() ?? '';
-}
 
 /** Sets the page's <title> text, adding a <title> to <head> if the page has none. */
 async function setPageTitle(doc: vscode.TextDocument, title: string) {

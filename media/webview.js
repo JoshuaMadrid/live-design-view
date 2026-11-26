@@ -89,6 +89,9 @@
   window.addEventListener('message', (ev) => {
     const m = ev.data;
     switch (m.type) {
+      case 'pageProps':
+        openPageSetup(m.values, m.isNew);
+        break;
       case 'init':
         setMode(m.mode);
         initInsertBar(m);
@@ -189,7 +192,8 @@
       drawAll();
       persist();
       reportStats(m.version);
-      $('#emptyState').hidden = !m.empty;
+      state.pageEmpty = !!m.empty;
+      $('#emptyState').hidden = !m.empty || !$('#pageSetup').hidden;
     };
 
     ifr.addEventListener(
@@ -1943,7 +1947,44 @@
     vscode.setState({ ...(vscode.getState() || {}), aids });
     post({ type: 'visualAids', on: aids });
   });
-  $('#scaffoldBtn').addEventListener('click', () => post({ type: 'scaffold' }));
+  // Page properties: title, language, style sheet and the page's look (a body rule).
+  const ps = /** @type {HTMLFormElement} */ ($('#pageSetup'));
+  const psField = (/** @type {string} */ id) => /** @type {HTMLInputElement} */ ($('#' + id));
+  const PS_FIELDS = { title: 'psTitle', lang: 'psLang', sheet: 'psSheet', sheetPath: 'psPath', font: 'psFont', size: 'psSize', color: 'psColor', background: 'psBg', margin: 'psMargin', padding: 'psPadding' };
+  const hex = (/** @type {string} */ v) => (/^#[0-9a-f]{6}$/i.test(v.trim()) ? v.trim() : /^#[0-9a-f]{3}$/i.test(v.trim()) ? '#' + v.trim().slice(1).split('').map((c) => c + c).join('') : null);
+  const syncSwatch = (/** @type {string} */ text, /** @type {string} */ pick) => { const h = hex(psField(text).value); if (h) psField(pick).value = h; };
+  function openPageSetup(values, isNew) {
+    for (const [k, id] of Object.entries(PS_FIELDS)) psField(id).value = values[k] ?? '';
+    $('#psHeading').textContent = isNew ? 'New page' : 'Page properties';
+    $('#psApply').textContent = isNew ? 'Create page' : 'Apply';
+    $('#psPathRow').hidden = psField('psSheet').value !== 'file';
+    syncSwatch('psColor', 'psColorPick');
+    syncSwatch('psBg', 'psBgPick');
+    $('#emptyState').hidden = true;
+    ps.hidden = false;
+    psField('psTitle').focus();
+    psField('psTitle').select();
+  }
+  function closePageSetup() {
+    ps.hidden = true;
+    if (state.pageEmpty) $('#emptyState').hidden = false;
+  }
+  psField('psSheet').addEventListener('change', () => { $('#psPathRow').hidden = psField('psSheet').value !== 'file'; });
+  for (const [text, pick] of [['psColor', 'psColorPick'], ['psBg', 'psBgPick']]) {
+    psField(text).addEventListener('input', () => syncSwatch(text, pick));
+    psField(pick).addEventListener('input', () => { psField(text).value = psField(pick).value.toUpperCase(); });
+  }
+  ps.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const values = {};
+    for (const [k, id] of Object.entries(PS_FIELDS)) values[k] = psField(id).value;
+    ps.hidden = true;
+    post({ type: 'pageSetup', values });
+  });
+  ps.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); closePageSetup(); } });
+  $('#psCancel').addEventListener('click', closePageSetup);
+  $('#scaffoldBtn').addEventListener('click', () => post({ type: 'pageProps' }));
+  $('#pagePropsBtn').addEventListener('click', () => post({ type: 'pageProps' }));
   $('#toggleInteract').addEventListener('click', () => {
     state.interact = !state.interact;
     const b = $('#toggleInteract');

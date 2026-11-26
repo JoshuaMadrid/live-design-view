@@ -317,3 +317,23 @@ body.dragging-el, body.dragging-el * { cursor: grabbing !important; }
 .la-badge { position: absolute; transform: translateX(-100%); pointer-events: auto; z-index: 2; height: 14px; padding: 0 5px; border: 0; border-radius: 3px; font: 600 9.5px/14px var(--vscode-font-family, system-ui); color: #fff; background: var(--la); cursor: pointer; opacity: .9; }
 .la-badge:hover { opacity: 1; box-shadow: 0 0 0 1.5px #fff; }
 .la-badge.out { transform: none; }
+
+/* Page properties */
+#pageSetup { position: absolute; left: 50%; top: 24px; transform: translateX(-50%); z-index: 8; width: 400px; max-width: calc(100% - 32px); max-height: calc(100% - 48px); overflow: auto; box-sizing: border-box;
+  padding: 12px 14px; font: 12px var(--vscode-font-family); color: var(--vscode-editorWidget-foreground, var(--vscode-foreground)); background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--vscode-editorWidget-border, var(--vscode-focusBorder)); border-radius: var(--ld-radius, 4px); box-shadow: 0 8px 28px rgba(0,0,0,.45); }
+#pageSetup[hidden] { display: none; }
+#pageSetup .ps-head { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+#pageSetup .ps-section { margin: 12px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+#pageSetup .ps-section em { font-style: normal; text-transform: none; letter-spacing: 0; font-weight: 400; }
+#pageSetup .ps-row { display: grid; grid-template-columns: 86px 1fr; align-items: center; gap: 8px; margin: 4px 0; }
+#pageSetup .ps-row[hidden] { display: none; }
+#pageSetup input:not([type=color]), #pageSetup select { box-sizing: border-box; width: 100%; height: 24px; padding: 2px 6px; font: inherit; color: var(--vscode-input-foreground); background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent); border-radius: 2px; }
+#pageSetup input:focus, #pageSetup select:focus { outline: 1px solid var(--ld-blue, var(--vscode-focusBorder)); outline-offset: -1px; }
+#pageSetup .ps-short { width: 110px; }
+#pageSetup .ps-color { display: flex; gap: 6px; align-items: center; }
+#pageSetup input[type=color] { width: 26px; height: 24px; padding: 0; border: 1px solid var(--vscode-input-border, #555); background: none; flex: none; }
+#pageSetup .ps-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+#pageSetup .ps-actions button { padding: 4px 12px; border-radius: 2px; color: var(--vscode-button-secondaryForeground, inherit); background: var(--vscode-button-secondaryBackground, #3a3d41); }
+#pageSetup .ps-actions .primary { color: var(--vscode-button-foreground, #fff); background: var(--ld-blue, var(--vscode-button-background)); }
