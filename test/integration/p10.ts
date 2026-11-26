@@ -10,6 +10,7 @@ import { setup, install, session, mark, sleep, file, done, DIR } from './tourkit
 type Props = [string, string][];
 
 export async function run(): Promise<void> {
+  if (process.env.LD_TOUR_FAST) process.env.LD_DEBUG_CSS = path.join(DIR, 'css-msgs.txt');
   const index = file('index.html');
   const fast = process.env.LD_TOUR_FAST ? 0.35 : 1;
   await setup();
@@ -53,6 +54,7 @@ export async function run(): Promise<void> {
   // --- Styles -----------------------------------------------------------------------------
   const props = async (list: Props) => {
     for (const [name, value] of list) {
+      if (process.env.LD_DEBUG_CSS) fs.appendFileSync(process.env.LD_DEBUG_CSS, `--- ${name}: ${value}\n`);
       await C({ op: 'type', sel: 'input[data-focus-key="new-prop"]', replace: true, value: name, cps: 14 }); await pause(120);
       await C({ op: 'type', sel: 'input[data-focus-key="new-val"]', replace: true, value, enter: true, cps: 14 }); await pause(750);
       // Check the style sheet really got it (a dropped property is a bug worth knowing about).
