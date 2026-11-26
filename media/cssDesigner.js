@@ -368,7 +368,7 @@
         draggable: st.mode === 'all' && r.key !== 'computed',
       }));
     const empty = st.mode === 'current' ? (st.element ? 'No rules apply to this element.' : 'Select an element in the Design view.') : 'No rules here yet — click + to add one.';
-    const body = h('div', {}, mediaFilter(), h('div', { class: 'filter-row' }, icon('search'), filter), input, list(items, st.rule, (k) => post({ type: 'selectRule', key: k }), {
+    const body = h('div', {}, mediaFilter(), h('div', { class: 'filter-row' }, icon('search'), filter), input, list(items, st.rule, (k) => (draft = { prop: '', val: '' }, post({ type: 'selectRule', key: k })), {
       empty,
       reorder: st.mode === 'all' ? (key, targetKey, position) => post({ type: 'moveRule', key, targetKey, position }) : null,
     }));
@@ -1138,14 +1138,13 @@
   }
 
   /** What's typed in the add-property row; kept across redraws (a style change can redraw mid-typing). */
-  let draft = { rule: '', prop: '', val: '' };
+  let draft = { prop: '', val: '' };
   function addPropRow() {
-    if (draft.rule !== st.rule) draft = { rule: st.rule, prop: '', val: '' };
     const commit = () => {
       const prop = draft.prop.trim();
       if (!prop) return;
       post({ type: 'setProp', prop, value: draft.val });
-      draft = { rule: st.rule, prop: '', val: '' };
+      draft = { prop: '', val: '' };
     };
     const n = /** @type {HTMLInputElement} */ (h('input', { placeholder: 'property', 'aria-label': 'New property name', 'data-focus-key': 'new-prop', spellcheck: 'false', value: draft.prop,
       oninput: () => { draft.prop = n.value; } }));

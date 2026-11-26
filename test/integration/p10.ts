@@ -3,7 +3,9 @@
 // Styles. Nothing is typed into the code editor; the code side just follows along.
 import * as vscode from 'vscode';
 import type { LiveSession } from '../../src/liveEditorProvider';
-import { setup, install, session, mark, sleep, file, done } from './tourkit';
+import * as fs from 'fs';
+import * as path from 'path';
+import { setup, install, session, mark, sleep, file, done, DIR } from './tourkit';
 
 type Props = [string, string][];
 
@@ -53,6 +55,12 @@ export async function run(): Promise<void> {
     for (const [name, value] of list) {
       await C({ op: 'type', sel: 'input[data-focus-key="new-prop"]', replace: true, value: name, cps: 14 }); await pause(120);
       await C({ op: 'type', sel: 'input[data-focus-key="new-val"]', replace: true, value, enter: true, cps: 14 }); await pause(750);
+      // Check the style sheet really got it (a dropped property is a bug worth knowing about).
+      const want = `${name}: ${value};`;
+      const css = async () => new TextDecoder().decode(await vscode.workspace.fs.readFile(file('css/styles.css'))).includes(want);
+      const t0 = Date.now();
+      while (!(await css()) && Date.now() - t0 < 4000) await sleep(200);
+      if (!(await css())) fs.appendFileSync(path.join(DIR, 'misses.txt'), want + '\n');
     }
   };
   const newRule = async (selector: string, list: Props) => {
