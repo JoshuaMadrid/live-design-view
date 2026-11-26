@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5
+
+- Page properties: set up a new page (title, language, style sheet, font, colors, margins), or edit them later from the toolbar.
+- Tailwind: 90+ components in groups (layout, navigation, content, buttons, forms, feedback, interactive, sections, shop).
+
 ## 1.0.4
 
 - Attributes: Page title field when the body is selected.

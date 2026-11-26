@@ -69,7 +69,8 @@ Then open any `.html` file and click **Design** or **Split** in the editor title
 ### Empty pages and `<body>`
 
 - Clicking blank space (below short content, or on an empty page) selects `<body>`, so you can **Nest** elements into it.
-- An **empty file** shows an *Add HTML5 page structure* button. Its first insert writes the standard page (doctype, `<head>` with charset, viewport and title, and `<body>`) with your element inside.
+- An **empty file** shows a *Set up this page…* button. **Page properties** asks for the title, language, a style sheet (a new CSS file, a `<style>` in the page, or none) and the page's look (font, size, text and background color, margin, padding, written as a `body` rule), then writes the standard page. Inserting an element into an empty file also writes the standard page with your element inside.
+- **Page properties** (toolbar) edits the same settings on an existing page.
 
 ### What the Design view renders
 
@@ -199,6 +200,7 @@ A list of elements with a category picker: **HTML, Form, Text, Media, Tailwind, 
 - New code is indented to match the surrounding lines (tabs or spaces, detected from the file). Nothing else in the file is reformatted. The new element is selected in Design view and, in Split, in the code editor.
 - **jQuery UI**: Accordion, Tabs, Dialog, Datepicker, Autocomplete, Slider, Progressbar, Button, Buttonset, Checkbox Buttons, Radio Buttons. Each inserts its markup plus an init script, with numbered ids (`Accordion1`, `Accordion2`…). jQuery UI (and its theme CSS) is added once: right after the page's own jQuery if it has one, otherwise with jQuery in `<head>`. The widgets run in the Design view; use Interact mode to click tabs and accordion headers.
 - **shadcn/ui** has every component from ui.shadcn.com/docs/components (66), grouped as **Actions, Forms, Layout, Navigation, Overlays, Feedback, Data, Chat & AI** (sub-tabs in the Elements bar, headings in the Elements panel), with text labels. They are static HTML + Tailwind in shadcn's default zinc style; overlays (Dialog, Sheet, Dropdown, Popover…) are shown open so you can design them.
+- **Tailwind** has 92 components grouped as **Layout, Navigation, Content, Buttons, Forms, Feedback, Interactive, Sections, Shop**, covering the usual front-end kit (grid, navbar, breadcrumb, pagination, cards, tables, button groups, form controls, alerts, toasts, progress, accordion, dropdown, modal, offcanvas, carousel, pricing, product cards…). Interactive pieces use built-in HTML (`<details>`, `<dialog>`, scroll snap), so they work without JavaScript.
 - **Tailwind** and **shadcn/ui** items add the Tailwind CDN `<script>` to `<head>` once. **React** items add React 18 + ReactDOM + Babel standalone (CDN) and a `<script type="text/babel">` component. The head scripts and the element are added in a single undo step.
 
 ### Structure
