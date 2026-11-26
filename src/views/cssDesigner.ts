@@ -392,7 +392,6 @@ export class CssDesignerProvider implements vscode.WebviewViewProvider, vscode.D
   // ---------------------------------------------------------------------------
 
   async onMessage(m: any) {
-    if (process.env.LD_DEBUG_CSS) require('fs').appendFileSync(process.env.LD_DEBUG_CSS, `${Date.now()} ${JSON.stringify({ ...m, html: undefined })} rule=${this.ruleKey}\n`);
     const s = this.hub.active;
     switch (m.type) {
       case 'ready':
