@@ -142,15 +142,29 @@
             await sleep(1000 / cps);
           }
         } else {
-          const el = /** @type {HTMLInputElement} */ (h ? h.n : document.activeElement);
+          let el = /** @type {HTMLInputElement} */ (h ? h.n : document.activeElement);
+          // A panel can redraw while we type; carry on in the field that replaced this one.
+          const fresh = () => {
+            if (el.isConnected || !m.sel) return;
+            const f = find(m);
+            if (f) { el = /** @type {HTMLInputElement} */ (f.n); el.focus(); }
+          };
           el.focus();
           if (m.replace) { el.value = ''; el.dispatchEvent(new Event('input', { bubbles: true })); }
           for (const ch of String(m.value ?? '')) {
+            fresh();
             el.value += ch;
             el.dispatchEvent(new Event('input', { bubbles: true }));
             await sleep(1000 / cps);
           }
           if (m.change) el.dispatchEvent(new Event('change', { bubbles: true }));
+          if (m.enter) {
+            await sleep(250);
+            fresh();
+            el.focus();
+            el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+            return;
+          }
         }
         if (m.enter) {
           await sleep(250);
